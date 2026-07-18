@@ -1,0 +1,8 @@
+{
+  "name": "Morning Stoic",
+  "short_name": "Stoic",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#F1EBDD",
+  "theme_color": "#8C3B2E"
+}
