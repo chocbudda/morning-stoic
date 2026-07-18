@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Morning Stoic</title>
+<meta name="theme-color" content="#8C3B2E" />
+<link rel="manifest" href="manifest.json" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;">
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+const { useState, useEffect } = React;
+
+
+// ---------- content ----------
+const VIRTUES = [
+  { key: "Wisdom", sub: "Perspective. What is in my control, what is not." },
+  { key: "Justice", sub: "Kindness, standards, keeping my word." },
+  { key: "Courage", sub: "The hard thing. Thinking for myself." },
+  { key: "Temperance", sub: "Discipline. Less phone, less complaint, less bustle." },
+];
+
+const QUOTES = [
+  { t: "If you do not know to which port you are sailing, no wind is favorable.", a: "Seneca" },
+  { t: "Love of bustle is not industry.", a: "Seneca" },
+  { t: "It is not that life is short, but that we waste much of it.", a: "Seneca" },
+  { t: "Be strict with yourself and tolerant with others.", a: "Marcus Aurelius" },
+  { t: "Think of the things you have, and how eagerly you would want them if you did not have them.", a: "Marcus Aurelius" },
+  { t: "Persist and resist.", a: "Epictetus" },
+  { t: "They did not offend me; I took offense.", a: "after Epictetus" },
+  { t: "Receive without pride, let go without attachment.", a: "Marcus Aurelius" },
+  { t: "You could leave life right now. Let that determine what you do and say and think.", a: "Marcus Aurelius" },
+  { t: "No role is so well suited to philosophy as the one you happen to be in right now.", a: "Marcus Aurelius" },
+  { t: "The impediment to action advances action. What stands in the way becomes the way.", a: "Marcus Aurelius" },
+  { t: "Well-being is attained by little and little, and nevertheless is no little thing itself.", a: "Zeno" },
+  { t: "Wealth consists not in having great possessions, but in having few wants.", a: "Epictetus" },
+  { t: "It is not the man who has too little, but the man who craves more, that is poor.", a: "Seneca" },
+  { t: "If you don't regard what you have as enough, you will never be happy even if you rule the entire world.", a: "Seneca" },
+  { t: "First say to yourself what you would be; and then do what you have to do.", a: "Epictetus" },
+  { t: "Our plans miscarry because they have no aim.", a: "Seneca" },
+  { t: "Don't let your imagination be crushed by life as a whole. Stick with the situation at hand.", a: "Marcus Aurelius" },
+  { t: "Ask yourself at every moment, 'Is this necessary?'", a: "Marcus Aurelius" },
+  { t: "We suffer more from imagination than from reality.", a: "Seneca" },
+];
+
+const RULES = [
+  { n: 1, title: "Own the morning", practice: "Decide tonight what tomorrow's first 30 minutes are for — then rise and do it." },
+  { n: 2, title: "Only focus on what's in your control", practice: "List today's worries in two columns: mine / not mine. Drop the second column." },
+  { n: 3, title: "Don't suffer imagined troubles", practice: "When anxious today, say: stay in the present; focus on what I control." },
+  { n: 4, title: "Treat success and failure the same", practice: "Greet today's highs and lows identically. You are the same rock." },
+  { n: 5, title: "Just do one thing every day", practice: "One gain. That's the whole assignment. It's step 4 below." },
+  { n: 6, title: "Make beautiful choices", practice: "At each fork today, take the harder, better option." },
+  { n: 7, title: "Ask: is this necessary?", practice: "Audit what's competing for your time. Cross out the inessential." },
+  { n: 8, title: "Love your fate", practice: "When something 'bad' happens today, answer it with: Good. Then find the use in it." },
+  { n: 9, title: "Speak with the dead", practice: "Read for 30 minutes today. The wisest people who ever lived are waiting." },
+  { n: 10, title: "Strict with yourself, tolerant with others", practice: "About to judge someone? Look for the good in them instead." },
+  { n: 11, title: "Turn obstacles upside down", practice: "The impediment to action advances action. Find the good in everything today." },
+  { n: 12, title: "Remember: you are dying every day", practice: "Five quiet minutes on how brief this is. Let it decide what you do and say." },
+];
+
+const MONTHLY = [
+  {
+    title: "The 'enough' check-in",
+    body: "Reread your enough-line in Port of Call. Heller had something the billionaire could never have: the knowledge that he had enough. Do you still agree with yours? Adjust it.",
+  },
+  {
+    title: "Practice poverty (one day)",
+    body: "Seneca's exercise: simplest food, plainest clothes, no comforts — asking the whole time, is this the condition I feared? It makes fear-driven decisions rarer.",
+  },
+  {
+    title: "The necessity audit",
+    body: "\u201CIf you seek tranquility, do less.\u201D List everything on your plate. Mark each necessary or not. Cut accordingly, and decommit from what you never should have committed to.",
+  },
+];
+
+// ---------- helpers ----------
+const dayKey = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+const daysSinceEpoch = (d = new Date()) => Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
+
+function computeStreak(entries) {
+  let streak = 0;
+  const d = new Date();
+  if (!entries[dayKey(d)]) d.setDate(d.getDate() - 1); // today not done yet: count back from yesterday
+  while (entries[dayKey(d)]) {
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+const STORE_KEY = "stoic-morning-v2";
+
+const emptyGoal = () => ({ text: "", when: "" });
+
+function StoicMorning() {
+  const today = new Date();
+  const tKey = dayKey(today);
+  const dayIdx = daysSinceEpoch(today);
+
+  const quote = QUOTES[dayIdx % QUOTES.length];
+  const rule = RULES[Math.floor(dayIdx / 7) % RULES.length];
+  const virtueDefault = VIRTUES[dayIdx % VIRTUES.length].key;
+  const monthly = MONTHLY[today.getMonth() % MONTHLY.length];
+  const showMonthly = today.getDate() <= 3;
+
+  // persistent state
+  const [loaded, setLoaded] = useState(false);
+  const [purpose, setPurpose] = useState("");
+  const [enough, setEnough] = useState("");
+  const [goals, setGoals] = useState([emptyGoal(), emptyGoal(), emptyGoal()]);
+  const [entries, setEntries] = useState({});
+
+  // today's inputs
+  const [readDone, setReadDone] = useState(false);
+  const [getTo, setGetTo] = useState("");
+  const [virtue, setVirtue] = useState(virtueDefault);
+  const [virtueNote, setVirtueNote] = useState("");
+  const [gain, setGain] = useState("");
+  const [evening, setEvening] = useState("");
+
+  // ui state
+  const [badDay, setBadDay] = useState(false);
+  const [portOpen, setPortOpen] = useState(false);
+  const [calmOpen, setCalmOpen] = useState(false);
+  const [saveState, setSaveState] = useState("idle"); // idle | saving | error
+  const [eveningSaved, setEveningSaved] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = window.localStorage.getItem(STORE_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          setPurpose(s.purpose || "");
+          setEnough(s.enough || "");
+          setGoals(
+            Array.isArray(s.goals) && s.goals.length === 3
+              ? s.goals
+              : [emptyGoal(), emptyGoal(), emptyGoal()]
+          );
+          setEntries(s.entries || {});
+          const t = (s.entries || {})[dayKey()];
+          if (t) {
+            setReadDone(!!t.read);
+            setGetTo(t.getTo || "");
+            setVirtue(t.virtue || virtueDefault);
+            setVirtueNote(t.virtueNote || "");
+            setGain(t.gain || "");
+            setEvening(t.evening || "");
+            setEveningSaved(!!t.evening);
+          }
+          if (!s.purpose && !(s.goals || []).some((g) => g.text)) setPortOpen(true);
+        } else {
+          setPortOpen(true);
+        }
+      } catch {
+        setPortOpen(true); // nothing saved yet
+      }
+      setLoaded(true);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const persist = async (next) => {
+    const payload = JSON.stringify({
+      purpose: next.purpose ?? purpose,
+      enough: next.enough ?? enough,
+      goals: next.goals ?? goals,
+      entries: next.entries ?? entries,
+    });
+    window.localStorage.setItem(STORE_KEY, payload);
+  };
+
+  const doneToday = !!entries[tKey];
+  const streak = computeStreak(entries);
+
+  const complete = async () => {
+    setSaveState("saving");
+    const entry = badDay
+      ? { read: true, getTo, badDay: true, ts: Date.now() }
+      : { read: readDone, getTo, virtue, virtueNote, gain, ts: Date.now() };
+    const nextEntries = { ...entries, [tKey]: entry };
+    try {
+      await persist({ entries: nextEntries });
+      setEntries(nextEntries);
+      setSaveState("idle");
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const saveEvening = async () => {
+    setSaveState("saving");
+    const nextEntries = { ...entries, [tKey]: { ...entries[tKey], evening } };
+    try {
+      await persist({ entries: nextEntries });
+      setEntries(nextEntries);
+      setEveningSaved(true);
+      setSaveState("idle");
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const savePort = async () => {
+    setSaveState("saving");
+    try {
+      await persist({ purpose, enough, goals });
+      setPortOpen(false);
+      setSaveState("idle");
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const setGoal = (i, field, v) => {
+    const g = goals.map((x, j) => (j === i ? { ...x, [field]: v } : x));
+    setGoals(g);
+  };
+
+  const activeGoals = goals.filter((g) => g.text.trim());
+  const canComplete = badDay ? getTo.trim() : readDone && getTo.trim() && gain.trim();
+
+  const dateLabel = today.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  return (
+    <div className="sm-root">
+      <style>{`
+        .sm-root { min-height: 100vh; background: #F1EBDD; color: #2A2620; font-family: Georgia, 'Times New Roman', serif; padding: 28px 16px 64px; }
+        .sm-shell { max-width: 640px; margin: 0 auto; }
+        .sm-eyebrow { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; color: #8a7d5a; margin-bottom: 6px; }
+        .sm-h1 { font-size: 30px; margin: 0 0 2px; font-weight: normal; letter-spacing: 0.3px; }
+        .sm-date { color: #6d6558; font-style: italic; margin-bottom: 18px; }
+        .sm-card { background: #FBF8F0; border: 1px solid #DDD3BC; border-radius: 6px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 1px 0 rgba(90,80,60,.08); }
+        .sm-quote { font-size: 18px; line-height: 1.5; font-style: italic; }
+        .sm-attr { margin-top: 8px; color: #8C3B2E; font-style: normal; font-size: 14px; }
+        .sm-rule-n { display: inline-block; border: 1px solid #8C3B2E; color: #8C3B2E; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 13px; margin-right: 10px; }
+        .sm-step { border-top: 1px dashed #DDD3BC; padding-top: 14px; margin-top: 14px; }
+        .sm-label { font-weight: bold; margin-bottom: 6px; }
+        .sm-sub { color: #6d6558; font-size: 13.5px; margin: 2px 0 8px; }
+        .sm-input, .sm-textarea, .sm-select { width: 100%; box-sizing: border-box; background: #fff; border: 1px solid #CBBFA4; border-radius: 4px; padding: 9px 10px; font-family: inherit; font-size: 15px; color: #2A2620; }
+        .sm-input:focus, .sm-textarea:focus, .sm-select:focus { outline: 2px solid #8a7d5a; outline-offset: 1px; }
+        .sm-textarea { min-height: 64px; resize: vertical; }
+        .sm-row { display: flex; gap: 8px; }
+        .sm-virtues { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .sm-virtue { border: 1px solid #CBBFA4; border-radius: 4px; padding: 8px 10px; cursor: pointer; background: #fff; font-family: inherit; text-align: left; font-size: 14px; }
+        .sm-virtue.on { border-color: #8C3B2E; background: #F8EDE8; }
+        .sm-virtue b { display: block; }
+        .sm-virtue span { color: #6d6558; font-size: 12px; }
+        .sm-btn { display: block; width: 100%; background: #8C3B2E; color: #FBF8F0; border: none; border-radius: 4px; padding: 13px; font-family: inherit; font-size: 16px; cursor: pointer; margin-top: 16px; }
+        .sm-btn:disabled { background: #C4A99F; cursor: default; }
+        .sm-btn.secondary { background: transparent; color: #8C3B2E; border: 1px solid #8C3B2E; }
+        .sm-link { background: none; border: none; color: #8a7d5a; text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 14px; padding: 4px; }
+        .sm-streak { float: right; text-align: right; font-size: 13px; color: #6d6558; }
+        .sm-streak b { display: block; font-size: 22px; color: #8C3B2E; }
+        .sm-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+        .sm-check input { margin-top: 4px; width: 17px; height: 17px; accent-color: #8C3B2E; }
+        .sm-goalchip { display: inline-block; background: #F0E9D8; border: 1px solid #DDD3BC; border-radius: 12px; padding: 3px 10px; font-size: 12.5px; color: #5c5443; margin: 2px 4px 2px 0; }
+        .sm-done { text-align: center; padding: 8px 0 2px; }
+        .sm-done .laurel { font-size: 30px; }
+        .sm-modal-bg { position: fixed; inset: 0; background: rgba(42,38,32,.55); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+        .sm-modal { background: #FBF8F0; border-radius: 6px; max-width: 460px; padding: 22px 24px; line-height: 1.5; }
+        .sm-err { color: #8C3B2E; font-size: 13px; margin-top: 8px; }
+        @media (max-width: 480px) { .sm-virtues { grid-template-columns: 1fr; } .sm-h1 { font-size: 25px; } }
+        @media (prefers-reduced-motion: no-preference) { .sm-card { transition: box-shadow .2s; } }
+      `}</style>
+
+      <div className="sm-shell">
+        <div className="sm-streak" aria-label={`Current streak ${streak} days`}>
+          <b>{streak}</b>day streak
+        </div>
+        <div className="sm-eyebrow">The daily practice</div>
+        <h1 className="sm-h1">Morning Stoic</h1>
+        <div className="sm-date">{dateLabel}</div>
+
+        {/* Quote of the day */}
+        <div className="sm-card">
+          <div className="sm-quote">&ldquo;{quote.t}&rdquo;</div>
+          <div className="sm-attr">— {quote.a}</div>
+        </div>
+
+        {/* Rule of the week */}
+        <div className="sm-card">
+          <div className="sm-eyebrow">Rule of the week</div>
+          <div style={{ fontSize: 18 }}>
+            <span className="sm-rule-n">{rule.n}</span>
+            <b>{rule.title}</b>
+          </div>
+          <p className="sm-sub" style={{ marginTop: 8 }}>{rule.practice}</p>
+        </div>
+
+        {/* Port of Call */}
+        <div className="sm-card">
+          <div className="sm-eyebrow" style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>Port of call</span>
+            <button className="sm-link" style={{ padding: 0 }} onClick={() => setPortOpen(!portOpen)}>
+              {portOpen ? "close" : "edit"}
+            </button>
+          </div>
+
+          {!portOpen && (
+            <div>
+              <p style={{ margin: "4px 0", fontStyle: purpose ? "italic" : "normal", color: purpose ? "#2A2620" : "#6d6558" }}>
+                {purpose || "No purpose set yet — a goal is a port of call. Tap edit to set yours."}
+              </p>
+              <div>
+                {activeGoals.map((g, i) => (
+                  <span key={i} className="sm-goalchip">{g.text}</span>
+                ))}
+              </div>
+              {enough && (
+                <p className="sm-sub" style={{ marginTop: 8 }}>Enough is: {enough}</p>
+              )}
+            </div>
+          )}
+
+          {portOpen && (
+            <div>
+              <div className="sm-label" style={{ marginTop: 6 }}>My purpose (one line)</div>
+              <p className="sm-sub">Joy comes from purpose, not passion. What is the practice for?</p>
+              <input className="sm-input" value={purpose} onChange={(e) => setPurpose(e.target.value)}
+                placeholder="I am practising this so that…" />
+
+              <div className="sm-label" style={{ marginTop: 14 }}>Three goals I control (at most)</div>
+              <p className="sm-sub">
+                Matthew McConaughey, on juggling too many pursuits: &ldquo;I was making B&rsquo;s in five
+                things. I wanna make A&rsquo;s in three things.&rdquo; Spread thin, you&rsquo;re mediocre at
+                everything; narrowed down, you can actually excel. That&rsquo;s why the app caps you at three.
+              </p>
+              <p className="sm-sub">
+                Write each as an action you control, not an outcome — &ldquo;do a 30-minute workout,&rdquo; not
+                &ldquo;lose 10 lbs.&rdquo; Add when &amp; where — a concrete time and place nearly triples
+                follow-through.
+              </p>
+              {goals.map((g, i) => (
+                <div className="sm-row" key={i} style={{ marginBottom: 8 }}>
+                  <input className="sm-input" style={{ flex: 2 }} value={g.text}
+                    onChange={(e) => setGoal(i, "text", e.target.value)}
+                    placeholder={`Goal ${i + 1} — e.g. one hour of deep work`} />
+                  <input className="sm-input" style={{ flex: 1 }} value={g.when}
+                    onChange={(e) => setGoal(i, "when", e.target.value)}
+                    placeholder="when & where" />
+                </div>
+              ))}
+
+              <div className="sm-label" style={{ marginTop: 10 }}>What &ldquo;enough&rdquo; means to me</div>
+              <p className="sm-sub">Define your rich life before the world defines it for you.</p>
+              <input className="sm-input" value={enough} onChange={(e) => setEnough(e.target.value)}
+                placeholder="I have enough when…" />
+
+              <button className="sm-btn secondary" onClick={savePort} disabled={saveState === "saving"}>
+                {saveState === "saving" ? "Saving…" : "Save port of call"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Monthly practice */}
+        {showMonthly && (
+          <div className="sm-card" style={{ borderColor: "#8a7d5a" }}>
+            <div className="sm-eyebrow">This month&rsquo;s practice</div>
+            <div style={{ fontWeight: "bold" }}>{monthly.title}</div>
+            <p className="sm-sub" style={{ marginTop: 6 }}>{monthly.body}</p>
+          </div>
+        )}
+
+        {/* Morning practice */}
+        <div className="sm-card">
+          <div className="sm-eyebrow">{badDay ? "Bad-day version (2 min — still counts)" : "This morning (10–15 min)"}</div>
+
+          {doneToday ? (
+            <div className="sm-done">
+              <div className="laurel">🏛️</div>
+              <p><b>Practice complete.</b> Well-begun is half won.</p>
+              {entries[tKey].gain && <p className="sm-sub">Today&rsquo;s gain: {entries[tKey].gain}</p>}
+              <div className="sm-step" style={{ textAlign: "left" }}>
+                <div className="sm-label">Evening (optional, 1 line)</div>
+                <p className="sm-sub">Where did I practise my virtue today? Where did I miss? Skip without guilt.</p>
+                <textarea className="sm-textarea" value={evening} onChange={(e) => { setEvening(e.target.value); setEveningSaved(false); }} />
+                <button className="sm-btn secondary" onClick={saveEvening}
+                  disabled={saveState === "saving" || !evening.trim() || eveningSaved}>
+                  {eveningSaved ? "Saved" : saveState === "saving" ? "Saving…" : "Save evening line"}
+                </button>
+                {saveState === "error" && <p className="sm-err">Couldn&rsquo;t save. Check your connection and try again.</p>}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="sm-step" style={{ borderTop: "none", paddingTop: 4, marginTop: 4 }}>
+                <label className="sm-check">
+                  <input type="checkbox" checked={readDone} onChange={(e) => setReadDone(e.target.checked)} />
+                  <span><b>1. Read</b> today&rsquo;s entry in <i>The Daily Stoic</i>. One page, slowly.</span>
+                </label>
+              </div>
+
+              <div className="sm-step">
+                <div className="sm-label">2. Gratitude reframe</div>
+                <div className="sm-row" style={{ alignItems: "center" }}>
+                  <span style={{ whiteSpace: "nowrap", fontStyle: "italic" }}>I get to</span>
+                  <input className="sm-input" value={getTo} onChange={(e) => setGetTo(e.target.value)}
+                    placeholder="…walk the kids to school" />
+                </div>
+              </div>
+
+              {!badDay && (
+                <>
+                  <div className="sm-step">
+                    <div className="sm-label">3. Virtue focus</div>
+                    <p className="sm-sub">Which virtue will today need most?</p>
+                    <div className="sm-virtues" role="group" aria-label="Choose a virtue">
+                      {VIRTUES.map((v) => (
+                        <button key={v.key} className={"sm-virtue" + (virtue === v.key ? " on" : "")}
+                          onClick={() => setVirtue(v.key)}>
+                          <b>{v.key}</b>
+                          <span>{v.sub}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <input className="sm-input" style={{ marginTop: 8 }} value={virtueNote}
+                      onChange={(e) => setVirtueNote(e.target.value)}
+                      placeholder="One concrete place I'll practise it today (optional)" />
+                  </div>
+
+                  <div className="sm-step">
+                    <div className="sm-label">4. Today&rsquo;s one gain</div>
+                    <p className="sm-sub">
+                      Ignore the goal; focus on the next brush stroke. One small step
+                      {activeGoals.length ? " toward one of your goals:" : "."}
+                    </p>
+                    {activeGoals.length > 0 && (
+                      <div style={{ marginBottom: 6 }}>
+                        {activeGoals.map((g, i) => (
+                          <span key={i} className="sm-goalchip">{g.text}{g.when ? ` · ${g.when}` : ""}</span>
+                        ))}
+                      </div>
+                    )}
+                    <input className="sm-input" value={gain} onChange={(e) => setGain(e.target.value)}
+                      placeholder="Today I will…" />
+                  </div>
+                </>
+              )}
+
+              <button className="sm-btn" onClick={complete} disabled={!canComplete || saveState === "saving"}>
+                {saveState === "saving" ? "Saving…" : "Complete practice"}
+              </button>
+              {saveState === "error" && (
+                <p className="sm-err">Couldn&rsquo;t save your entry. Check your connection and press Complete again.</p>
+              )}
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                <button className="sm-link" onClick={() => setBadDay(!badDay)}>
+                  {badDay ? "Back to full practice" : "Bad day? Use the 2-minute version"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <button className="sm-link" onClick={() => setCalmOpen(true)}>Feeling rattled? Open the calm protocol</button>
+        </div>
+
+        {!loaded && <p className="sm-sub" style={{ textAlign: "center" }}>Loading your practice…</p>}
+
+        {calmOpen && (
+          <div className="sm-modal-bg" onClick={() => setCalmOpen(false)}>
+            <div className="sm-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>The protocol</div>
+              <p><b>1. Don&rsquo;t make it worse.</b> First rule of holes: when you&rsquo;re in one, stop digging.</p>
+              <p><b>2. Find the faulty judgment.</b> The distress rests on an assumption. What false
+                assumption am I making?</p>
+              <p><b>3. Right-size it.</b> Is this in my control? If not, cheerfully hand it to fate and
+                return to what is. And remember rule 8: <i>Good.</i> Now find the use in it.</p>
+              <button className="sm-link" onClick={() => setCalmOpen(false)}>Close</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<StoicMorning />);
+</script>
+</body>
+</html>
