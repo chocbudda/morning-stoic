@@ -128,6 +128,10 @@ function StoicMorning() {
   const [badDay, setBadDay] = useState(false);
   const [portOpen, setPortOpen] = useState(false);
   const [calmOpen, setCalmOpen] = useState(false);
+  const [calmView, setCalmView] = useState("protocol"); // protocol | above
+  const [premedOpen, setPremedOpen] = useState(false);
+  const [premedEvent, setPremedEvent] = useState("");
+  const [premedRisks, setPremedRisks] = useState("");
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
 
@@ -468,19 +472,67 @@ function StoicMorning() {
         <div style={{ textAlign: "center" }}>
           <button className="sm-link" onClick={() => setCalmOpen(true)}>Feeling rattled? Open the calm protocol</button>
         </div>
+        <div style={{ textAlign: "center" }}>
+          <button className="sm-link" onClick={() => setPremedOpen(true)}>Got something big coming up? Rehearse what could go wrong</button>
+        </div>
 
         {!loaded && <p className="sm-sub" style={{ textAlign: "center" }}>Loading your practice…</p>}
 
         {calmOpen && (
-          <div className="sm-modal-bg" onClick={() => setCalmOpen(false)}>
+          <div className="sm-modal-bg" onClick={() => { setCalmOpen(false); setCalmView("protocol"); }}>
             <div className="sm-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>The protocol</div>
-              <p><b>1. Don&rsquo;t make it worse.</b> First rule of holes: when you&rsquo;re in one, stop digging.</p>
-              <p><b>2. Find the faulty judgment.</b> The distress rests on an assumption. What false
-                assumption am I making?</p>
-              <p><b>3. Right-size it.</b> Is this in my control? If not, cheerfully hand it to fate and
-                return to what is. And remember rule 8: <i>Good.</i> Now find the use in it.</p>
-              <button className="sm-link" onClick={() => setCalmOpen(false)}>Close</button>
+              {calmView === "protocol" ? (
+                <>
+                  <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>The protocol</div>
+                  <p><b>1. Don&rsquo;t make it worse.</b> First rule of holes: when you&rsquo;re in one, stop digging.</p>
+                  <p><b>2. Find the faulty judgment.</b> The distress rests on an assumption. What false
+                    assumption am I making?</p>
+                  <p><b>3. Right-size it.</b> Is this in my control? If not, cheerfully hand it to fate and
+                    return to what is. And remember rule 8: <i>Good.</i> Now find the use in it.</p>
+                  <p style={{ marginTop: 10 }}>
+                    <button className="sm-link" style={{ padding: 0 }} onClick={() => setCalmView("above")}>
+                      Still stuck? Try the view from above →
+                    </button>
+                  </p>
+                  <button className="sm-link" onClick={() => setCalmOpen(false)}>Close</button>
+                </>
+              ) : (
+                <>
+                  <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>The view from above</div>
+                  <p>Picture it: armies, farms, weddings, funerals, births, silent rooms, noisy
+                    courtrooms — the whole tangle of human life, happening all at once, right now,
+                    across the whole earth.</p>
+                  <p>Your problem is real. It is also one thread in something enormous. Let it shrink
+                    by distance, not by argument.</p>
+                  <p style={{ marginTop: 10 }}>
+                    <button className="sm-link" style={{ padding: 0 }} onClick={() => setCalmView("protocol")}>
+                      ← Back to the protocol
+                    </button>
+                  </p>
+                  <button className="sm-link" onClick={() => { setCalmOpen(false); setCalmView("protocol"); }}>Close</button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {premedOpen && (
+          <div className="sm-modal-bg" onClick={() => setPremedOpen(false)}>
+            <div className="sm-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>Premeditatio malorum</div>
+              <p style={{ marginTop: 0 }}>Seneca did this before every trip — running through storms, a
+                sick captain, pirates — so nothing could catch him unprepared. Rehearsed, a setback loses
+                some of its power to surprise you.</p>
+              <div className="sm-label" style={{ marginTop: 10 }}>What&rsquo;s coming up?</div>
+              <input className="sm-input" value={premedEvent} onChange={(e) => setPremedEvent(e.target.value)}
+                placeholder="The trip, meeting, launch, conversation…" />
+              <div className="sm-label" style={{ marginTop: 12 }}>What could go wrong?</div>
+              <textarea className="sm-textarea" value={premedRisks} onChange={(e) => setPremedRisks(e.target.value)}
+                placeholder="List the storms, the sick captains, the pirates…" />
+              <p className="sm-sub" style={{ marginTop: 8 }}>
+                This isn&rsquo;t kept or logged anywhere — it&rsquo;s just for the rehearsal. Close whenever you&rsquo;re done.
+              </p>
+              <button className="sm-link" onClick={() => { setPremedOpen(false); setPremedEvent(""); setPremedRisks(""); }}>Close</button>
             </div>
           </div>
         )}
