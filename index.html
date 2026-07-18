@@ -108,6 +108,7 @@ function StoicMorning() {
   const virtueDefault = VIRTUES[dayIdx % VIRTUES.length].key;
   const monthly = MONTHLY[today.getMonth() % MONTHLY.length];
   const showMonthly = today.getDate() <= 3;
+  const isOddDay = today.getDate() % 2 === 1;
 
   // persistent state
   const [loaded, setLoaded] = useState(false);
@@ -118,9 +119,10 @@ function StoicMorning() {
 
   // today's inputs
   const [readDone, setReadDone] = useState(false);
-  const [getTo, setGetTo] = useState("");
+  const [gratitude, setGratitude] = useState("");
   const [virtue, setVirtue] = useState(virtueDefault);
   const [virtueNote, setVirtueNote] = useState("");
+  const [portToday, setPortToday] = useState("");
   const [gain, setGain] = useState("");
   const [evening, setEvening] = useState("");
 
@@ -152,9 +154,10 @@ function StoicMorning() {
           const t = (s.entries || {})[dayKey()];
           if (t) {
             setReadDone(!!t.read);
-            setGetTo(t.getTo || "");
+            setGratitude(t.gratitude || "");
             setVirtue(t.virtue || virtueDefault);
             setVirtueNote(t.virtueNote || "");
+            setPortToday(t.portToday || "");
             setGain(t.gain || "");
             setEvening(t.evening || "");
             setEveningSaved(!!t.evening);
@@ -187,8 +190,8 @@ function StoicMorning() {
   const complete = async () => {
     setSaveState("saving");
     const entry = badDay
-      ? { read: true, getTo, badDay: true, ts: Date.now() }
-      : { read: readDone, getTo, virtue, virtueNote, gain, ts: Date.now() };
+      ? { read: true, gratitude, badDay: true, ts: Date.now() }
+      : { read: readDone, gratitude, virtue, virtueNote, portToday, gain, ts: Date.now() };
     const nextEntries = { ...entries, [tKey]: entry };
     try {
       await persist({ entries: nextEntries });
@@ -229,7 +232,7 @@ function StoicMorning() {
   };
 
   const activeGoals = goals.filter((g) => g.text.trim());
-  const canComplete = badDay ? getTo.trim() : readDone && getTo.trim() && gain.trim();
+  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim() && portToday.trim() && gain.trim();
 
   const dateLabel = today.toLocaleDateString(undefined, {
     weekday: "long",
@@ -331,20 +334,26 @@ function StoicMorning() {
           {portOpen && (
             <div>
               <div className="sm-label" style={{ marginTop: 6 }}>My purpose (one line)</div>
-              <p className="sm-sub">Joy comes from purpose, not passion. What is the practice for?</p>
+              <p className="sm-sub">
+                &ldquo;If you do not know to which port you are sailing, no wind is favorable.&rdquo;
+                — Seneca. This line is your port: the one reason underneath everything else you do
+                below. Everything else only matters because of this.
+              </p>
               <input className="sm-input" value={purpose} onChange={(e) => setPurpose(e.target.value)}
                 placeholder="I am practising this so that…" />
 
               <div className="sm-label" style={{ marginTop: 14 }}>Three goals I control (at most)</div>
               <p className="sm-sub">
                 Matthew McConaughey, on juggling too many pursuits: &ldquo;I was making B&rsquo;s in five
-                things. I wanna make A&rsquo;s in three things.&rdquo; Spread thin, you&rsquo;re mediocre at
-                everything; narrowed down, you can actually excel. That&rsquo;s why the app caps you at three.
+                things. I wanna make A&rsquo;s in three things.&rdquo; Spread across many things, you're
+                mediocre at all of them; narrowed to a few, you can actually do them well. That&rsquo;s
+                why the app caps you at three goals.
               </p>
               <p className="sm-sub">
-                Write each as an action you control, not an outcome — &ldquo;do a 30-minute workout,&rdquo; not
-                &ldquo;lose 10 lbs.&rdquo; Add when &amp; where — a concrete time and place nearly triples
-                follow-through.
+                Write each one as something you do, not a result you're hoping for — &ldquo;go for a
+                30-minute run,&rdquo; not &ldquo;lose 10 lbs.&rdquo; You can control the run. You can&rsquo;t
+                fully control the number on the scale. Add a specific time and place too — people who
+                do that follow through far more often than people with a vague intention.
               </p>
               {goals.map((g, i) => (
                 <div className="sm-row" key={i} style={{ marginBottom: 8 }}>
@@ -358,7 +367,10 @@ function StoicMorning() {
               ))}
 
               <div className="sm-label" style={{ marginTop: 10 }}>What &ldquo;enough&rdquo; means to me</div>
-              <p className="sm-sub">Define your rich life before the world defines it for you.</p>
+              <p className="sm-sub">
+                One line describing what a genuinely good-enough life looks like for you — so you've
+                defined it yourself, before ads, comparisons, or other people define it for you.
+              </p>
               <input className="sm-input" value={enough} onChange={(e) => setEnough(e.target.value)}
                 placeholder="I have enough when…" />
 
@@ -408,35 +420,75 @@ function StoicMorning() {
               </div>
 
               <div className="sm-step">
-                <div className="sm-label">2. Gratitude reframe</div>
-                <div className="sm-row" style={{ alignItems: "center" }}>
-                  <span style={{ whiteSpace: "nowrap", fontStyle: "italic" }}>I get to</span>
-                  <input className="sm-input" value={getTo} onChange={(e) => setGetTo(e.target.value)}
-                    placeholder="…walk the kids to school" />
+                <div className="sm-label">2. Write your philosophy + today&rsquo;s virtue</div>
+                <p className="sm-sub">Copy this out, by hand, in your journal:</p>
+                <blockquote style={{ margin: "0 0 10px", padding: "8px 12px", borderLeft: "3px solid #8a7d5a", background: "#F5F1E6", fontStyle: "italic", fontSize: 14 }}>
+                  My daily goal is to bring my actions, desires, and thoughts into harmony with my
+                  philosophy of life. My philosophy of life is virtue = freedom. The four Stoic
+                  virtues are wisdom, courage, justice, and temperance. Virtue is the only good.
+                </blockquote>
+                <p className="sm-sub">Then look at your actual day and circle what you&rsquo;ll need most:</p>
+                <div className="sm-virtues" role="group" aria-label="Choose a virtue">
+                  {VIRTUES.map((v) => (
+                    <button key={v.key} className={"sm-virtue" + (virtue === v.key ? " on" : "")}
+                      onClick={() => setVirtue(v.key)}>
+                      <b>{v.key}</b>
+                      <span>{v.sub}</span>
+                    </button>
+                  ))}
                 </div>
+                <div className="sm-row" style={{ alignItems: "center", marginTop: 8 }}>
+                  <span style={{ whiteSpace: "nowrap", fontStyle: "italic" }}>because</span>
+                  <input className="sm-input" value={virtueNote} onChange={(e) => setVirtueNote(e.target.value)}
+                    placeholder="…I have a hard conversation this afternoon" />
+                </div>
+              </div>
+
+              <div className="sm-step">
+                <div className="sm-label">3. One gratitude exercise</div>
+                {isOddDay ? (
+                  <>
+                    <p className="sm-sub">
+                      Odd day — desire what you have. Write one thing you have right now that a past
+                      version of you desperately wanted. (&ldquo;Think of what you have, and how eagerly
+                      you&rsquo;d want it if you didn&rsquo;t.&rdquo; — Marcus Aurelius)
+                    </p>
+                    <input className="sm-input" value={gratitude} onChange={(e) => setGratitude(e.target.value)}
+                      placeholder="A past version of me wanted…" />
+                  </>
+                ) : (
+                  <>
+                    <p className="sm-sub">
+                      Even day — turn &ldquo;have to&rdquo; into &ldquo;get to.&rdquo; Take today&rsquo;s most
+                      tedious obligation and write it as something you get to do. You won&rsquo;t get to
+                      do it an unlimited number of times.
+                    </p>
+                    <div className="sm-row" style={{ alignItems: "center" }}>
+                      <span style={{ whiteSpace: "nowrap", fontStyle: "italic" }}>I get to</span>
+                      <input className="sm-input" value={gratitude} onChange={(e) => setGratitude(e.target.value)}
+                        placeholder="…walk the kids to school" />
+                    </div>
+                  </>
+                )}
               </div>
 
               {!badDay && (
                 <>
                   <div className="sm-step">
-                    <div className="sm-label">3. Virtue focus</div>
-                    <p className="sm-sub">Which virtue will today need most?</p>
-                    <div className="sm-virtues" role="group" aria-label="Choose a virtue">
-                      {VIRTUES.map((v) => (
-                        <button key={v.key} className={"sm-virtue" + (virtue === v.key ? " on" : "")}
-                          onClick={() => setVirtue(v.key)}>
-                          <b>{v.key}</b>
-                          <span>{v.sub}</span>
-                        </button>
-                      ))}
+                    <div className="sm-label">4. Name the port</div>
+                    <p className="sm-sub">
+                      One sentence. &ldquo;If you do not know to which port you are sailing, no wind is
+                      favorable.&rdquo; — Seneca
+                    </p>
+                    <div className="sm-row" style={{ alignItems: "center" }}>
+                      <span style={{ whiteSpace: "nowrap", fontStyle: "italic" }}>Today is a success if</span>
+                      <input className="sm-input" value={portToday} onChange={(e) => setPortToday(e.target.value)}
+                        placeholder="…I finish the draft before lunch" />
                     </div>
-                    <input className="sm-input" style={{ marginTop: 8 }} value={virtueNote}
-                      onChange={(e) => setVirtueNote(e.target.value)}
-                      placeholder="One concrete place I'll practise it today (optional)" />
                   </div>
 
                   <div className="sm-step">
-                    <div className="sm-label">4. Today&rsquo;s one gain</div>
+                    <div className="sm-label">5. Today&rsquo;s one gain</div>
                     <p className="sm-sub">
                       Ignore the goal; focus on the next brush stroke. One small step
                       {activeGoals.length ? " toward one of your goals:" : "."}
