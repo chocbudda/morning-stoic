@@ -613,11 +613,13 @@ function StoicMorning() {
                       }} />
                     ))}
                   </div>
-                  <div className="sm-read-source">
-                    <a href={LESSONS[readIndex].url} target="_blank" rel="noopener noreferrer" className="sm-link" style={{ padding: 0 }}>
-                      {LESSONS[readIndex].type === "video" ? "Watch the original video →" : "Read the original source →"}
-                    </a>
-                  </div>
+                  {LESSONS[readIndex].url && (
+                    <div className="sm-read-source">
+                      <a href={LESSONS[readIndex].url} target="_blank" rel="noopener noreferrer" className="sm-link" style={{ padding: 0 }}>
+                        {LESSONS[readIndex].type === "video" ? "Watch the original video →" : "Read the original source →"}
+                      </a>
+                    </div>
+                  )}
                   <button className="sm-link" onClick={() => { setLearnOpen(false); setReadIndex(null); }}>Close</button>
                 </>
               )}
