@@ -11,7 +11,12 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="stoic-content.js"></script>
+<script>
+  // Always fetch the latest content, never a cached copy — the timestamp
+  // makes every page load request a fresh URL. This line never needs to
+  // change; only stoic-content.js itself does.
+  document.write('<script src="stoic-content.js?v=' + Date.now() + '"><' + '/script>');
+</script>
 </head>
 <body style="margin:0;">
 <div id="root"></div>
