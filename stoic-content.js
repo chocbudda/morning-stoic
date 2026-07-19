@@ -123,6 +123,13 @@ const LESSONS = [
     ],
   },
   {
+    title: "Meditations",
+    type: "article",
+    source: "Marcus Aurelius, trans. A.S.L. Farquharson (Wikisource)",
+    url: "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus",
+    note: "The full primary source, free — the book this entire routine keeps circling back to. Worth having on hand rather than only reading about.",
+  },
+  {
     title: "The 5-Step Stoic Routine For Thinking Clearly | Maria Semple",
     type: "video",
     source: "The Daily Stoic Podcast",
