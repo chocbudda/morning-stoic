@@ -71,7 +71,9 @@ const MONTHLY = [
 //   title  — display name
 //   type   — 'video' | 'article' | 'exercise'
 //   source — channel / publication name, shown as a small tag
-//   url    — link to the original resource, opens in a new tab
+//   url    — link to the original resource, opens in a new tab. OPTIONAL
+//            for a self-written lesson with no external source — the
+//            in-app read just won't show a "read the original" link.
 //   note   — one line teaser, shown in the list
 //   read   — OPTIONAL. An array of paragraph strings making up an in-app
 //            "read". Length is whatever the idea actually needs — a
@@ -93,6 +95,33 @@ const MONTHLY = [
 // shape for each entry and the app will pick it up automatically; no
 // other file needs to change.
 const LESSONS = [
+  {
+    title: "Understanding Core Stoic Principles",
+    type: "exercise",
+    source: "Personal study notes",
+    note: "The foundation: the dichotomy of control, the four virtues, and what it actually means to live in agreement with nature.",
+    read: [
+      "When studying Stoicism, understanding the core principles is foundational. This philosophy isn't just about reading ancient texts — it's a practical framework for reducing anxiety, building resilience, and living a good life regardless of external circumstances. Grasping these core tenets, especially knowing what you can and cannot control, will transform how you approach daily challenges.",
+
+      "**The Dichotomy of Control**",
+
+      "The foundational principle of Stoicism is the dichotomy of control. Epictetus, one of the most prominent Stoic philosophers, put it plainly: some things are within our control, and some things are not. Focusing your energy solely on what you can control — your own thoughts, beliefs, decisions, and actions — leads to tranquility. Stressing over things outside your control — other people's opinions, the weather, the past, the outcome of your efforts — leads to suffering.",
+
+      "\"Make the best use of what is in your power, and take the rest as it happens.\" — Epictetus, Enchiridion",
+
+      "**The Four Stoic Virtues**",
+
+      "Stoics believe that virtue is the only true good, and is both necessary and sufficient for happiness. They defined virtue through four interconnected categories — the cardinal virtues — which aren't abstract ideas so much as practical guides for everyday behavior.",
+
+      "Wisdom (prudence) is the ability to navigate complex situations logically, calmly, and rationally — knowing what is good, what is bad, and what is simply indifferent. Courage (fortitude) isn't just physical bravery but moral courage: the strength to do what's right, stand by your principles, and face adversity without compromising your character. Justice was the most important virtue to the Stoics, since it governs your relationship with others — acting with fairness and kindness, and treating others as part of one shared, global community. Temperance (self-discipline) is moderation in all things: the ability to govern your appetites, desires, and impulses rather than letting them govern you.",
+
+      "**Living in Agreement with Nature, and Amor Fati**",
+
+      "\"Living in agreement with nature\" doesn't mean living in the woods. For the Stoics, human nature is uniquely defined by our capacity for reason and sociability — so living according to nature means using reason to act virtuously and to work for the common good.",
+
+      "Closely related is amor fati, the love of fate. It's the practice of not just accepting what happens to you — even adversity — but embracing it. Instead of wishing things were different, a Stoic loves the reality of the situation, treating every obstacle as an opportunity to practice virtue.",
+    ],
+  },
   {
     title: "The 5-Step Stoic Routine For Thinking Clearly | Maria Semple",
     type: "video",
