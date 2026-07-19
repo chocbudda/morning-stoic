@@ -9,75 +9,21 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="stoic-content.js"></script>
 </head>
 <body style="margin:0;">
 <div id="root"></div>
 <script type="text/babel" data-type="module">
 const { useState, useEffect } = React;
+const { VIRTUES, QUOTES, RULES, MONTHLY, LESSONS } = window.STOIC_CONTENT;
 
-
-// ---------- content ----------
-const VIRTUES = [
-  { key: "Wisdom", sub: "Perspective. What is in my control, what is not." },
-  { key: "Justice", sub: "Kindness, standards, keeping my word." },
-  { key: "Courage", sub: "The hard thing. Thinking for myself." },
-  { key: "Temperance", sub: "Discipline. Less phone, less complaint, less bustle." },
-];
-
-const QUOTES = [
-  { t: "If you do not know to which port you are sailing, no wind is favorable.", a: "Seneca" },
-  { t: "Love of bustle is not industry.", a: "Seneca" },
-  { t: "It is not that life is short, but that we waste much of it.", a: "Seneca" },
-  { t: "Be strict with yourself and tolerant with others.", a: "Marcus Aurelius" },
-  { t: "Think of the things you have, and how eagerly you would want them if you did not have them.", a: "Marcus Aurelius" },
-  { t: "Persist and resist.", a: "Epictetus" },
-  { t: "They did not offend me; I took offense.", a: "after Epictetus" },
-  { t: "Receive without pride, let go without attachment.", a: "Marcus Aurelius" },
-  { t: "You could leave life right now. Let that determine what you do and say and think.", a: "Marcus Aurelius" },
-  { t: "No role is so well suited to philosophy as the one you happen to be in right now.", a: "Marcus Aurelius" },
-  { t: "The impediment to action advances action. What stands in the way becomes the way.", a: "Marcus Aurelius" },
-  { t: "Well-being is attained by little and little, and nevertheless is no little thing itself.", a: "Zeno" },
-  { t: "Wealth consists not in having great possessions, but in having few wants.", a: "Epictetus" },
-  { t: "It is not the man who has too little, but the man who craves more, that is poor.", a: "Seneca" },
-  { t: "If you don't regard what you have as enough, you will never be happy even if you rule the entire world.", a: "Seneca" },
-  { t: "First say to yourself what you would be; and then do what you have to do.", a: "Epictetus" },
-  { t: "Our plans miscarry because they have no aim.", a: "Seneca" },
-  { t: "Don't let your imagination be crushed by life as a whole. Stick with the situation at hand.", a: "Marcus Aurelius" },
-  { t: "Ask yourself at every moment, 'Is this necessary?'", a: "Marcus Aurelius" },
-  { t: "We suffer more from imagination than from reality.", a: "Seneca" },
-];
-
-const RULES = [
-  { n: 1, title: "Own the morning", practice: "Decide tonight what tomorrow's first 30 minutes are for — then rise and do it." },
-  { n: 2, title: "Only focus on what's in your control", practice: "List today's worries in two columns: mine / not mine. Drop the second column." },
-  { n: 3, title: "Don't suffer imagined troubles", practice: "When anxious today, say: stay in the present; focus on what I control." },
-  { n: 4, title: "Treat success and failure the same", practice: "Greet today's highs and lows identically. You are the same rock." },
-  { n: 5, title: "Just do one thing every day", practice: "One gain. That's the whole assignment. It's step 4 below." },
-  { n: 6, title: "Make beautiful choices", practice: "At each fork today, take the harder, better option." },
-  { n: 7, title: "Ask: is this necessary?", practice: "Audit what's competing for your time. Cross out the inessential." },
-  { n: 8, title: "Love your fate", practice: "When something 'bad' happens today, answer it with: Good. Then find the use in it." },
-  { n: 9, title: "Speak with the dead", practice: "Read for 30 minutes today. The wisest people who ever lived are waiting." },
-  { n: 10, title: "Strict with yourself, tolerant with others", practice: "About to judge someone? Look for the good in them instead." },
-  { n: 11, title: "Turn obstacles upside down", practice: "The impediment to action advances action. Find the good in everything today." },
-  { n: 12, title: "Remember: you are dying every day", practice: "Five quiet minutes on how brief this is. Let it decide what you do and say." },
-];
-
-const MONTHLY = [
-  {
-    title: "The 'enough' check-in",
-    body: "Reread your enough-line in Port of Call. Heller had something the billionaire could never have: the knowledge that he had enough. Do you still agree with yours? Adjust it.",
-  },
-  {
-    title: "Practice poverty (one day)",
-    body: "Seneca's exercise: simplest food, plainest clothes, no comforts — asking the whole time, is this the condition I feared? It makes fear-driven decisions rarer.",
-  },
-  {
-    title: "The necessity audit",
-    body: "\u201CIf you seek tranquility, do less.\u201D List everything on your plate. Mark each necessary or not. Cut accordingly, and decommit from what you never should have committed to.",
-  },
-];
 
 // ---------- helpers ----------
+const estimateReadMins = (paragraphs) => {
+  const words = paragraphs.join(" ").split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 180));
+};
+
 const dayKey = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
@@ -134,6 +80,8 @@ function StoicMorning() {
   const [premedOpen, setPremedOpen] = useState(false);
   const [premedEvent, setPremedEvent] = useState("");
   const [premedRisks, setPremedRisks] = useState("");
+  const [learnOpen, setLearnOpen] = useState(false);
+  const [readIndex, setReadIndex] = useState(null); // index into LESSONS currently being read in-app
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
 
@@ -277,6 +225,18 @@ function StoicMorning() {
         .sm-done .laurel { font-size: 30px; }
         .sm-modal-bg { position: fixed; inset: 0; background: rgba(42,38,32,.55); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
         .sm-modal { background: #FBF8F0; border-radius: 6px; max-width: 460px; padding: 22px 24px; line-height: 1.5; }
+        .sm-modal-scroll { max-height: 80vh; overflow-y: auto; }
+        .sm-lesson { display: block; border: 1px solid #DDD3BC; border-radius: 5px; padding: 10px 12px; margin-bottom: 8px; text-decoration: none; color: #2A2620; background: #fff; }
+        .sm-lesson:active { background: #F5F1E6; }
+        .sm-lesson-top { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
+        .sm-lesson-tag { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #8C3B2E; }
+        .sm-lesson-source { font-size: 12px; color: #6d6558; margin-left: auto; }
+        .sm-lesson-title { font-weight: bold; font-size: 15px; }
+        .sm-lesson-note { font-size: 13px; color: #6d6558; margin-top: 2px; }
+        .sm-lesson-cta { margin-top: 6px; font-size: 12.5px; color: #8C3B2E; font-weight: bold; }
+        .sm-read-back { background: none; border: none; color: #8a7d5a; text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 13px; padding: 0; margin-bottom: 10px; }
+        .sm-read-body p { font-size: 15px; line-height: 1.6; margin: 0 0 12px; }
+        .sm-read-source { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #DDD3BC; font-size: 13px; }
         .sm-err { color: #8C3B2E; font-size: 13px; margin-top: 8px; }
         @media (max-width: 480px) { .sm-virtues { grid-template-columns: 1fr; } .sm-h1 { font-size: 25px; } }
         @media (prefers-reduced-motion: no-preference) { .sm-card { transition: box-shadow .2s; } }
@@ -527,6 +487,9 @@ function StoicMorning() {
         <div style={{ textAlign: "center" }}>
           <button className="sm-link" onClick={() => setPremedOpen(true)}>Got something big coming up? Rehearse what could go wrong</button>
         </div>
+        <div style={{ textAlign: "center" }}>
+          <button className="sm-link" onClick={() => setLearnOpen(true)}>I have more time to learn Stoicism</button>
+        </div>
 
         {!loaded && <p className="sm-sub" style={{ textAlign: "center" }}>Loading your practice…</p>}
 
@@ -585,6 +548,77 @@ function StoicMorning() {
                 This isn&rsquo;t kept or logged anywhere — it&rsquo;s just for the rehearsal. Close whenever you&rsquo;re done.
               </p>
               <button className="sm-link" onClick={() => { setPremedOpen(false); setPremedEvent(""); setPremedRisks(""); }}>Close</button>
+            </div>
+          </div>
+        )}
+
+        {learnOpen && (
+          <div className="sm-modal-bg" onClick={() => { setLearnOpen(false); setReadIndex(null); }}>
+            <div className="sm-modal sm-modal-scroll" onClick={(e) => e.stopPropagation()}>
+              {readIndex === null ? (
+                <>
+                  <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>I have more time to learn Stoicism</div>
+                  <p style={{ marginTop: 0 }}>
+                    The daily practice is deliberately short. When you have more than fifteen minutes,
+                    here&rsquo;s where to go deeper — videos, articles, and reads worth the extra time.
+                  </p>
+                  {LESSONS.length === 0 ? (
+                    <p className="sm-sub">Nothing added yet.</p>
+                  ) : (
+                    LESSONS.map((l, i) =>
+                      l.read && l.read.length > 0 ? (
+                        <a key={i} className="sm-lesson" href="#" onClick={(e) => { e.preventDefault(); setReadIndex(i); }}>
+                          <div className="sm-lesson-top">
+                            <span className="sm-lesson-tag">
+                              {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
+                            </span>
+                            {l.source && <span className="sm-lesson-source">{l.source}</span>}
+                          </div>
+                          <div className="sm-lesson-title">{l.title}</div>
+                          {l.note && <div className="sm-lesson-note">{l.note}</div>}
+                          <div className="sm-lesson-cta">Read · ~{estimateReadMins(l.read)} min →</div>
+                        </a>
+                      ) : (
+                        <a key={i} className="sm-lesson" href={l.url} target="_blank" rel="noopener noreferrer">
+                          <div className="sm-lesson-top">
+                            <span className="sm-lesson-tag">
+                              {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
+                            </span>
+                            {l.source && <span className="sm-lesson-source">{l.source}</span>}
+                          </div>
+                          <div className="sm-lesson-title">{l.title}</div>
+                          {l.note && <div className="sm-lesson-note">{l.note}</div>}
+                        </a>
+                      )
+                    )
+                  )}
+                  <button className="sm-link" onClick={() => setLearnOpen(false)}>Close</button>
+                </>
+              ) : (
+                <>
+                  <button className="sm-read-back" onClick={() => setReadIndex(null)}>← Back to list</button>
+                  <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>
+                    ~{estimateReadMins(LESSONS[readIndex].read)} min read
+                  </div>
+                  <h2 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: "normal" }}>{LESSONS[readIndex].title}</h2>
+                  {LESSONS[readIndex].source && (
+                    <p className="sm-sub" style={{ marginTop: 0 }}>{LESSONS[readIndex].source}</p>
+                  )}
+                  <div className="sm-read-body">
+                    {LESSONS[readIndex].read.map((para, pi) => (
+                      <p key={pi} dangerouslySetInnerHTML={{
+                        __html: para.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                      }} />
+                    ))}
+                  </div>
+                  <div className="sm-read-source">
+                    <a href={LESSONS[readIndex].url} target="_blank" rel="noopener noreferrer" className="sm-link" style={{ padding: 0 }}>
+                      {LESSONS[readIndex].type === "video" ? "Watch the original video →" : "Read the original source →"}
+                    </a>
+                  </div>
+                  <button className="sm-link" onClick={() => { setLearnOpen(false); setReadIndex(null); }}>Close</button>
+                </>
+              )}
             </div>
           </div>
         )}
