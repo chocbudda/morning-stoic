@@ -115,7 +115,8 @@ function StoicMorning() {
   const [readIndex, setReadIndex] = useState(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
-  const [copyState, setCopyState] = useState("idle"); // idle | copied | error // index into LESSONS currently being read in-app
+  const [copyState, setCopyState] = useState("idle"); // idle | copied | error
+  const [importState, setImportState] = useState("idle"); // idle | done | error
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
 
@@ -246,6 +247,68 @@ function StoicMorning() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  // Full backup: everything needed to restore this person's data exactly,
+  // on this device or a different one. This is the "personal data file"
+  // half of a shared-content / personal-file setup — the bulk content
+  // (quotes, rules, lessons) lives in stoic-content.js for everyone; this
+  // file is just one person's own practice.
+  const exportFullBackup = () => {
+    const payload = {
+      _type: "morning-stoic-backup",
+      _version: 1,
+      exportedAt: new Date().toISOString(),
+      purpose,
+      enough,
+      philosophy,
+      goals,
+      entries,
+      lessonMeta,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `morning-stoic-backup-${dayKey()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const importFullBackup = (file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (data._type !== "morning-stoic-backup") throw new Error("not a backup file");
+        const ok = window.confirm(
+          "This will replace everything currently saved on this device with the backup file. Continue?"
+        );
+        if (!ok) return;
+        setPurpose(data.purpose || "");
+        setEnough(data.enough || "");
+        setPhilosophy(data.philosophy || DEFAULT_PHILOSOPHY);
+        setGoals(Array.isArray(data.goals) && data.goals.length === 3 ? data.goals : [emptyGoal(), emptyGoal(), emptyGoal()]);
+        setEntries(data.entries || {});
+        setLessonMeta(data.lessonMeta || {});
+        persist({
+          purpose: data.purpose || "",
+          enough: data.enough || "",
+          philosophy: data.philosophy || DEFAULT_PHILOSOPHY,
+          goals: data.goals || [emptyGoal(), emptyGoal(), emptyGoal()],
+          entries: data.entries || {},
+          lessonMeta: data.lessonMeta || {},
+        });
+        setImportState("done");
+        setTimeout(() => setImportState("idle"), 2500);
+      } catch {
+        setImportState("error");
+        setTimeout(() => setImportState("idle"), 3000);
+      }
+    };
+    reader.readAsText(file);
   };
 
   const toggleLessonRead = (title) => {
@@ -655,7 +718,7 @@ function StoicMorning() {
           <button className="sm-link" onClick={() => setLearnOpen(true)}>I have more time to learn Stoicism</button>
         </div>
         <div style={{ textAlign: "center" }}>
-          <button className="sm-link" onClick={() => setJournalOpen(true)}>Read my past entries</button>
+          <button className="sm-link" onClick={() => setJournalOpen(true)}>Backup, restore &amp; past entries</button>
         </div>
 
         {!loaded && <p className="sm-sub" style={{ textAlign: "center" }}>Loading your practice…</p>}
@@ -809,7 +872,29 @@ function StoicMorning() {
         {journalOpen && (
           <div className="sm-modal-bg" onClick={() => setJournalOpen(false)}>
             <div className="sm-modal sm-modal-scroll" onClick={(e) => e.stopPropagation()}>
-              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>Your past entries</div>
+              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>Backup &amp; restore</div>
+              <p className="sm-sub" style={{ marginTop: 0 }}>
+                Everything here lives only on this device. Download a backup occasionally, and keep the
+                file somewhere safe — it's also how you'd move your practice to a new phone.
+              </p>
+              <div className="sm-row" style={{ gap: 8, marginBottom: 6 }}>
+                <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }} onClick={exportFullBackup}>
+                  Download full backup
+                </button>
+                <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }}
+                  onClick={() => document.getElementById("sm-backup-file-input").click()}>
+                  Restore from backup
+                </button>
+              </div>
+              <input id="sm-backup-file-input" type="file" accept="application/json" style={{ display: "none" }}
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) importFullBackup(e.target.files[0]);
+                  e.target.value = "";
+                }} />
+              {importState === "done" && <p className="sm-sub" style={{ color: "#4C6B3C" }}>Restored ✓</p>}
+              {importState === "error" && <p className="sm-err">That didn&rsquo;t look like a Morning Stoic backup file.</p>}
+
+              <div className="sm-eyebrow" style={{ color: "#8C3B2E", marginTop: 16 }}>Your past entries</div>
               {Object.keys(entries).length === 0 ? (
                 <p className="sm-sub" style={{ marginTop: 0 }}>Nothing saved yet — complete a morning practice first.</p>
               ) : (
