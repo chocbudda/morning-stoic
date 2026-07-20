@@ -160,6 +160,19 @@ const LESSONS = [
     ],
   },
   {
+    title: "Why You Should Read Primary Sources (Not Just Books About Them)",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
+    type: "article",
+    source: "Common Sense Ethics, guest post by Greg Sadler",
+    url: "https://www.commonsenseethics.com/blog/the-10-best-philosophy-books-for-beginners",
+    note: "The actual argument for why the primary sources above are worth your time over just reading summaries of them — plus a broader beginner's reading list.",
+    read: [
+      "This piece is nominally a \"best philosophy books for beginners\" list, but its real argument is the case for reading primary texts at all — which is exactly why the four primary sources sit at the top of this list. Sadler's reasoning: secondary literature (summaries, textbooks, guides like this app's own lesson notes) is a fine way in, but relying on it exclusively has three specific failure modes. You get so used to pre-digested summaries that the real texts start to feel needlessly difficult by comparison. You start trusting the summarizer's account of what a philosopher said instead of checking it yourself. And you absorb oversimplified labels and categories that flatten out thinkers who were usually more complicated than their reputation suggests.",
+      "The upside of going to the source directly, in his view, is twofold: you get what the person actually said rather than someone else's edited version of it, and you get exposed to the real variety of how philosophy has been written — dialogues, letters, private journals, lecture notes, aphorisms — instead of the one flattened textbook format most summaries default to.",
+      "His actual list of ten beginner-friendly primary texts leans heavily ancient and medieval, on the logic that most later philosophy assumes familiarity with what came before it. It opens with Plato's four dialogues on Socrates' trial and death (Euthyphro, Apology, Crito, Phaedo) — the same Apology already at the top of this list. For Stoicism specifically, his pick is Epictetus's Discourses and Handbook over Seneca's Letters or Marcus Aurelius's Meditations, on the grounds that Epictetus gives a beginner more to work with in a more systematic form — though his framing is about where to start, not which one is \"best\" once you're past that point.",
+    ],
+  },
+  {
     title: "Understanding Core Stoic Principles",
     defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "exercise",
