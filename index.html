@@ -275,6 +275,46 @@ function StoicMorning() {
   };
 
   const activeGoals = goals.filter((g) => g.text.trim());
+
+  const lessonTag = (l) =>
+    l.type === "primary" ? "📜 Primary Source"
+      : l.type === "video" ? "🎥 Video"
+      : l.type === "exercise" ? "🧭 Exercise"
+      : "📄 Article";
+
+  const renderLessonCard = (l, i) => {
+    const meta = lessonMeta[l.title] || { read: false, rank: 0 };
+    const rank = effectiveRank(l);
+    const hasRead = l.read && l.read.length > 0;
+    return (
+      <div key={l.title || i} className={"sm-lesson" + (l.type === "primary" ? " sm-lesson-primary" : "")} style={{ cursor: "default" }}>
+        <a href={hasRead ? "#" : l.url} target={hasRead ? undefined : "_blank"} rel="noopener noreferrer"
+          style={{ textDecoration: "none", color: "inherit", display: "block" }}
+          onClick={(e) => { if (hasRead) { e.preventDefault(); setReadIndex(LESSONS.indexOf(l)); } }}>
+          <div className="sm-lesson-top">
+            <span className="sm-lesson-tag">{lessonTag(l)}</span>
+            {l.source && <span className="sm-lesson-source">{l.source}</span>}
+          </div>
+          <div className="sm-lesson-title">{l.title}</div>
+          {l.note && <div className="sm-lesson-note">{l.note}</div>}
+          {hasRead && <div className="sm-lesson-cta">Read · ~{estimateReadMins(l.read)} min →</div>}
+        </a>
+        <div className="sm-lesson-controls">
+          <button className={"sm-read-toggle" + (meta.read ? " on" : "")}
+            onClick={() => toggleLessonRead(l.title)}>
+            {meta.read ? "Read ✓" : "Mark as read"}
+          </button>
+          <div className="sm-stars" aria-label="Rate how often you want to return to this">
+            {[1, 2, 3].map((n) => (
+              <button key={n} className={"sm-star" + (rank >= n ? " on" : "")}
+                onClick={() => setLessonRank(l.title, n)}
+                aria-label={`Set priority ${n}`}>★</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
   const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim() && portToday.trim() && gain.trim();
 
   const dateLabel = today.toLocaleDateString(undefined, {
@@ -322,6 +362,9 @@ function StoicMorning() {
         .sm-modal { background: #FBF8F0; border-radius: 6px; max-width: 460px; padding: 22px 24px; line-height: 1.5; }
         .sm-modal-scroll { max-height: 80vh; overflow-y: auto; }
         .sm-lesson { display: block; border: 1px solid #DDD3BC; border-radius: 5px; padding: 10px 12px; margin-bottom: 8px; text-decoration: none; color: #2A2620; background: #fff; }
+        .sm-lesson-primary { border: 2px solid #8C3B2E; background: #FBF3EC; }
+        .sm-group-heading { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8C3B2E; margin: 14px 0 6px; }
+        .sm-group-heading:first-of-type { margin-top: 4px; }
         .sm-lesson:active { background: #F5F1E6; }
         .sm-lesson-top { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
         .sm-lesson-tag { font-family: 'Trebuchet MS', Verdana, sans-serif; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #8C3B2E; }
@@ -695,43 +738,27 @@ function StoicMorning() {
                   {LESSONS.length === 0 ? (
                     <p className="sm-sub">Nothing added yet.</p>
                   ) : (
-                    LESSONS
-                      .filter((l) => !favoritesOnly || effectiveRank(l) > 0)
-                      .map((l, i) => {
-                        const meta = lessonMeta[l.title] || { read: false, rank: 0 };
-                        const rank = effectiveRank(l);
-                        const hasRead = l.read && l.read.length > 0;
-                        return (
-                          <div key={l.title || i} className="sm-lesson" style={{ cursor: "default" }}>
-                            <a href={hasRead ? "#" : l.url} target={hasRead ? undefined : "_blank"} rel="noopener noreferrer"
-                              style={{ textDecoration: "none", color: "inherit", display: "block" }}
-                              onClick={(e) => { if (hasRead) { e.preventDefault(); setReadIndex(LESSONS.indexOf(l)); } }}>
-                              <div className="sm-lesson-top">
-                                <span className="sm-lesson-tag">
-                                  {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
-                                </span>
-                                {l.source && <span className="sm-lesson-source">{l.source}</span>}
-                              </div>
-                              <div className="sm-lesson-title">{l.title}</div>
-                              {l.note && <div className="sm-lesson-note">{l.note}</div>}
-                              {hasRead && <div className="sm-lesson-cta">Read · ~{estimateReadMins(l.read)} min →</div>}
-                            </a>
-                            <div className="sm-lesson-controls">
-                              <button className={"sm-read-toggle" + (meta.read ? " on" : "")}
-                                onClick={() => toggleLessonRead(l.title)}>
-                                {meta.read ? "Read ✓" : "Mark as read"}
-                              </button>
-                              <div className="sm-stars" aria-label="Rate how often you want to return to this">
-                                {[1, 2, 3].map((n) => (
-                                  <button key={n} className={"sm-star" + (rank >= n ? " on" : "")}
-                                    onClick={() => setLessonRank(l.title, n)}
-                                    aria-label={`Set priority ${n}`}>★</button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
+                    (() => {
+                      const filtered = LESSONS.filter((l) => !favoritesOnly || effectiveRank(l) > 0);
+                      const primary = filtered.filter((l) => l.type === "primary");
+                      const rest = filtered.filter((l) => l.type !== "primary");
+                      return (
+                        <>
+                          {primary.length > 0 && (
+                            <>
+                              <div className="sm-group-heading">Primary sources</div>
+                              {primary.map((l, i) => renderLessonCard(l, i))}
+                            </>
+                          )}
+                          {rest.length > 0 && (
+                            <>
+                              {primary.length > 0 && <div className="sm-group-heading">More to explore</div>}
+                              {rest.map((l, i) => renderLessonCard(l, i))}
+                            </>
+                          )}
+                        </>
+                      );
+                    })()
                   )}
                   <button className="sm-link" onClick={() => setLearnOpen(false)}>Close</button>
                 </>
