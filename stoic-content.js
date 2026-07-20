@@ -36,6 +36,20 @@ const QUOTES = [
   { t: "Don't let your imagination be crushed by life as a whole. Stick with the situation at hand.", a: "Marcus Aurelius" },
   { t: "Ask yourself at every moment, 'Is this necessary?'", a: "Marcus Aurelius" },
   { t: "We suffer more from imagination than from reality.", a: "Seneca" },
+  { t: "You have power over your mind — not outside events. Realize this, and you will find strength.", a: "Marcus Aurelius" },
+  { t: "Waste no more time arguing about what a good man should be. Be one.", a: "Marcus Aurelius" },
+  { t: "The best revenge is to be unlike him who performed the injury.", a: "Marcus Aurelius" },
+  { t: "The soul becomes dyed with the color of its thoughts.", a: "Marcus Aurelius" },
+  { t: "Sometimes even to live is an act of courage.", a: "Seneca" },
+  { t: "Fire tests gold, suffering tests brave men.", a: "Seneca" },
+  { t: "As long as you live, keep learning how to live.", a: "Seneca" },
+  { t: "No man is free who is not master of himself.", a: "Epictetus" },
+  { t: "Men are disturbed not by things, but by the view which they take of them.", a: "Epictetus" },
+  { t: "We have two ears and one mouth so that we can listen twice as much as we speak.", a: "Epictetus" },
+  { t: "In things relating to the body, take only as much as your bare need requires.", a: "Epictetus" },
+  { t: "All the good are friends of one another.", a: "Zeno" },
+  { t: "No loss should be more regrettable to us than losing our time, for it's irretrievable.", a: "Zeno" },
+  { t: "Only in good actions is there true joy.", a: "Musonius Rufus" },
 ];
 
 const RULES = [
@@ -109,7 +123,7 @@ const MONTHLY = [
 const LESSONS = [
   {
     title: "Apology",
-    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "primary",
     source: "Plato, trans. Benjamin Jowett (MIT Classics Archive)",
     url: "https://classics.mit.edu/Plato/apology.html",
@@ -133,7 +147,7 @@ const LESSONS = [
   },
   {
     title: "The Discourses of Epictetus",
-    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "primary",
     source: "Epictetus, trans. George Long (Wikisource)",
     url: "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments",
@@ -141,7 +155,7 @@ const LESSONS = [
   },
   {
     title: "Moral Letters to Lucilius",
-    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "primary",
     source: "Seneca, trans. Richard M. Gummere (Wikisource)",
     url: "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius",
