@@ -117,6 +117,7 @@ function StoicMorning() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [copyState, setCopyState] = useState("idle"); // idle | copied | error
   const [importState, setImportState] = useState("idle"); // idle | done | error
+  const [backupSaveState, setBackupSaveState] = useState("idle"); // idle | saved
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
 
@@ -254,7 +255,17 @@ function StoicMorning() {
   // half of a shared-content / personal-file setup — the bulk content
   // (quotes, rules, lessons) lives in stoic-content.js for everyone; this
   // file is just one person's own practice.
-  const exportFullBackup = () => {
+  //
+  // Saves using the best method the browser supports:
+  //   1. File System Access API (desktop Chrome/Edge) — a real "Save As"
+  //      dialog where you pick any folder, including one synced by
+  //      Google Drive for Desktop, OneDrive, Dropbox, etc.
+  //   2. Web Share API with files (Android Chrome, iOS Safari) — opens
+  //      the native share sheet, where Google Drive, Files, email, etc.
+  //      all appear as destinations if those apps are installed.
+  //   3. Plain download (everything else) — goes to the default
+  //      Downloads folder; move it manually from there.
+  const exportFullBackup = async () => {
     const payload = {
       _type: "morning-stoic-backup",
       _version: 1,
@@ -266,11 +277,51 @@ function StoicMorning() {
       entries,
       lessonMeta,
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const json = JSON.stringify(payload, null, 2);
+    const filename = `morning-stoic-backup-${dayKey()}.json`;
+    const blob = new Blob([json], { type: "application/json" });
+
+    // 1. Real save-location picker (desktop Chrome / Edge)
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: "Morning Stoic backup", accept: { "application/json": [".json"] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        setBackupSaveState("saved");
+        setTimeout(() => setBackupSaveState("idle"), 2500);
+        return;
+      } catch {
+        // User cancelled the picker, or it failed — fall through to other methods
+      }
+    }
+
+    // 2. Native share sheet with the file attached (Android / iOS)
+    const file = new File([blob], filename, { type: "application/json" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "Morning Stoic backup",
+        });
+        setBackupSaveState("saved");
+        setTimeout(() => setBackupSaveState("idle"), 2500);
+        return;
+      } catch {
+        // User cancelled the share sheet — don't fall through to a download,
+        // that would feel like the cancel didn't work
+        return;
+      }
+    }
+
+    // 3. Plain download fallback
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `morning-stoic-backup-${dayKey()}.json`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -874,12 +925,13 @@ function StoicMorning() {
             <div className="sm-modal sm-modal-scroll" onClick={(e) => e.stopPropagation()}>
               <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>Backup &amp; restore</div>
               <p className="sm-sub" style={{ marginTop: 0 }}>
-                Everything here lives only on this device. Download a backup occasionally, and keep the
-                file somewhere safe — it's also how you'd move your practice to a new phone.
+                Everything here lives only on this device. Save a backup occasionally, somewhere outside
+                the app — a synced folder, Google Drive, wherever — it's also how you'd move your
+                practice to a new phone.
               </p>
               <div className="sm-row" style={{ gap: 8, marginBottom: 6 }}>
                 <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }} onClick={exportFullBackup}>
-                  Download full backup
+                  {backupSaveState === "saved" ? "Saved ✓" : "Save backup…"}
                 </button>
                 <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }}
                   onClick={() => document.getElementById("sm-backup-file-input").click()}>
