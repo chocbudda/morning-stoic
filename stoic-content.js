@@ -214,6 +214,105 @@ const LESSONS = [
       "That's the bet this morning routine makes too: fifteen minutes of reading and writing, in exchange for a day spent slightly differently than it would have gone otherwise. The reading was never the practice. It was the preparation for it.",
     ],
   },
+  {
+    title: "The View From Above",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/the-stoic-view-from-above/",
+    note: "Zoom out — spatially or through time — until whatever's gripping you shrinks back to its actual size.",
+    read: [
+      "This is a longer, more deliberate version of the calm protocol's view-from-above screen. Step back mentally from wherever you are: the desk, then the room, the building, the street, the city, the country, the planet — the same move psychologists now call self-distancing, which the Stoics were doing two thousand years earlier without the label. Marcus did versions of this constantly in Meditations, picturing the whole scramble of human life from high above to remind himself how small any single grievance actually is against the whole of it.",
+      "The research backs it up, too — psychologist Igor Grossmann's work on self-distancing found that viewing your own situation from a third-person perspective measurably improves reasoning under stress. Practically, it helps to attach the exercise to a trigger you already notice — rereading the same stressful message three times, for instance. There's also a time-based version: instead of zooming out through space, ask whether this will matter in five years, then twenty, then a century. Most things shrink fast on that scale.",
+    ],
+  },
+  {
+    title: "Building a Stoic Morning",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/crafting-the-ultimate-stoic-routine-morning-rituals-1/",
+    note: "A different take on the morning sequence — a Stoic quote, journaling, a short meditation, reading, cold exposure, and a brief death meditation.",
+    read: [
+      "This is one podcaster's own version of a Stoic morning, and it's worth comparing against the routine you're already running. His sequence: read and sit with a Stoic quote before getting out of bed, journal to build gratitude and anticipate the day's obstacles, a short meditation, ten to fifteen minutes reading from the Stoic texts themselves, a bit of cold exposure as deliberate discomfort, and a brief death meditation to sharpen focus for the day ahead.",
+      "His own framing is worth keeping: take the whole thing, or borrow just the one or two pieces that fit your life. Nobody runs every Stoic practice every day forever — the point is having a menu to draw from when the version you're currently running needs a change.",
+    ],
+  },
+  {
+    title: "Turning Work Into a Stoic Practice",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/creating-the-ultimate-stoic-routine-work-rituals-2/",
+    note: "A performance statement, and treating every work session as training rather than just something to get through.",
+    read: [
+      "The companion piece to the morning routine above, aimed at the workday itself. The starting move is broadening what counts as \"work\" — it doesn't have to be your job. Anything you take seriously and want to improve at qualifies, whether that's a career, a craft, or a martial art practiced on the side.",
+      "The most useful specific tool here is the performance statement — a short, standing affirmation you return to during work, something like: whenever I notice I'm distracted, I'll note the distraction and return to the task. Having that line ready in advance means distraction doesn't spiral into frustration; it just triggers a small, practiced redirect. The broader aim is treating each work session less like labor to survive and more like a rep — a place discipline and focus actually get built.",
+    ],
+  },
+  {
+    title: "Socrates' Two-Column Technique",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/why-socrates-two-column-technique-is-still-the-ultimate-self-improvement-tool-ft-donald-robertson/",
+    note: "A simple written exercise Socrates actually used — testing whether a rule you live by holds up against real exceptions.",
+    read: [
+      "According to Xenophon, Socrates used to draw two columns on a wax tablet with one of his students, Euthydemus — a young man who'd memorized a large library of \"wise sayings\" but hadn't actually tested any of them. One column held a rule Euthydemus lived by, like \"I must always be honest.\" The other held exceptions — situations where the rule quietly breaks, like a white lie that spares someone real pain.",
+      "The method in three steps: write down a rule you hold. List situations where it doesn't quite hold up. Then ask what those exceptions actually reveal, and whether the rule needs adjusting. It's a small tool, but it does real work against rigid thinking — beliefs like \"everything must go perfectly\" cause a lot of unnecessary frustration precisely because they never get tested against real exceptions until a bad day forces the issue.",
+    ],
+  },
+  {
+    title: "Marcus Aurelius Was Terrible at Stoicism",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://stoichandbook.buzzsprout.com/1882875/19335609-marcus-aurelius-was-terrible-at-stoicism",
+    note: "His own journal shows him failing at the very things he's famous for — which is the actual point, not an embarrassing footnote.",
+    read: [
+      "Marcus Aurelius is the most quoted Stoic on the internet, and his private journal shows a man who kept failing at the thing he's famous for. He struggled to get out of bed — there are two separate passages, four books apart, where he's still arguing with himself about it. He needed roughly ten different strategies across Meditations for managing his own temper. Near the end of his life, he wrote about being \"far from philosophy.\"",
+      "The distinction that makes sense of all this is the difference between the sage — the theoretical, fully perfected Stoic — and the prokopton, the Stoic in training, which is what every real Stoic actually was, including Marcus. He knew exactly which one he was. If you've ever felt like a fraud for needing to relearn the same lesson for the tenth time, that's not a sign you're doing this wrong. It's what doing it at all actually looks like.",
+    ],
+  },
+  {
+    title: "The Three Tests for Any Goal",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/how-to-set-goals-that-dont-break-epictetuss-three-tests/",
+    note: "Before setting a goal, run it through control and cost — most goals fail because they skip both.",
+    read: [
+      "Epictetus's opening move in the Enchiridion draws a hard line between what's up to you and what isn't — and most goals people set fail this test immediately. \"Lose 20 pounds\" depends on your body cooperating. \"Get promoted\" depends on your boss. The fix isn't more discipline; it's converting the outcome into a practice you can actually guarantee. Not \"lose weight,\" but \"move for thirty minutes and eat by a rule I can keep.\" The outcome becomes a bonus, not the point — which is exactly the same move behind this app's Port of Call goals.",
+      "The second test is cost. Epictetus uses the example of wanting to win at the Olympics — sure, so does everyone, he says, but then lists everything that actually requires: the diet, the injuries, the total surrender to a coach's instructions. His point: before you commit to wanting the medal, count what the medal actually costs. Most abandoned goals weren't abandoned from weak willpower — they were abandoned because nobody priced them honestly before starting.",
+    ],
+  },
+  {
+    title: "What \"Remove Desire Entirely\" Really Means",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/remove-desire-epictetus/",
+    note: "Not about wanting nothing — about not staking your peace of mind on outcomes you can't control.",
+    read: [
+      "Epictetus's instruction to \"remove desire entirely\" sounds like it's asking you to stop wanting things, which trips most readers up immediately. The clearer way in: a personal story about driving to pick up a son having a rough patch with school, noticing a clenched, anxious feeling before even arriving — running scenarios, needing the morning to go smoothly, needing the co-parent to be cooperative. Every one of those outcomes was completely outside his control. The desire wasn't the wanting itself — it was the quiet contract underneath it: if this goes well, I'll be okay; if it doesn't, I won't.",
+      "There's a three-stage progression worth knowing. Demand is where most people live — \"this must go well, or it's a disaster\" — desire fused directly to an outcome you can't control. Indifference is the common overcorrection — deciding not to care at all, which no Stoic actually taught. The real target is preference with reservation: you're still allowed to want the good outcome, pursue it, and prefer it — you just stop making your inner stability conditional on getting it.",
+    ],
+  },
+  {
+    title: "Preference Without Panic",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/stoic-indifferents-selective-value/",
+    note: "The difference between selecting something and needing it — confusing the two is what makes wanting things painful.",
+    read: [
+      "In Stoic terms, only two things carry real moral weight: virtue is genuinely good, vice is genuinely bad. Everything else — health, money, whether a meeting goes well, whether your kid sleeps through the night — is technically an \"indifferent.\" That word derails a lot of readers, because it sounds like the Stoics are telling you not to care about any of it. They aren't. You're allowed to select health over sickness, meaningful work over meaningless work — you just don't get to treat the selection as morally necessary, the way virtue actually is.",
+      "The practical test: name whatever you're anxious about, then ask one question — am I treating this as worth selecting, or as something I can't survive without? If it's the first, notice how much lighter it feels immediately; you can still pursue it, adjust course, or let it go if you have to. If it's the second, that's the slide into exactly the kind of suffering the Stoics were trying to engineer out of daily life.",
+    ],
+  },
+  {
+    title: "The Practice That Made Me Grateful for My Legs",
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/podcast/the-ancient-stoic-practice-that-made-me-grateful-for-my-legs-and-everything-else-i-take-for-granted/",
+    note: "A version of premeditatio malorum aimed specifically at gratitude — imagining loss to actually feel what you already have.",
+    read: [
+      "This is premeditatio malorum turned toward appreciation instead of preparation. Imagine, briefly and deliberately, losing something ordinary you take for granted — your legs, your freedom, someone you love — and then notice what happens when you realize, a moment later, that you still have it. Gratitude stops being a concept you nod along to and becomes something closer to a felt experience, if only for a few seconds.",
+      "Frequency matters here: once a week or once a month is genuinely enough — overdoing it dulls the effect rather than sharpening it. It works best exactly when you're feeling complacent, entitled, or stuck in the \"I'll be happy when...\" trap this whole practice is built to interrupt. A lighter, everyday version: when you're with someone you love, briefly imagine them gone. When you're walking, briefly imagine losing that ability. It sounds bleak written down, but in practice it's one of the more grounding two-second habits available.",
+    ],
+  },
   // Add your own entries here, e.g.:
   // {
   //   title: "Example lesson title",
