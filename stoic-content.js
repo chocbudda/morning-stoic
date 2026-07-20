@@ -148,6 +148,18 @@ const LESSONS = [
     note: "The full primary source, free — 124 letters, each short enough to read one at a time, the closest thing Stoicism has to a personal-advice column.",
   },
   {
+    title: "Plato's Apology: The Only Book Every Human Needs to Read",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    type: "article",
+    source: "The Stoic Handbook, Jon Brooks, ft. Donald Robertson",
+    url: "https://www.stoichandbook.co/podcast/platos-apology-the-only-book-every-human-needs-to-read/",
+    note: "Why Donald Robertson calls this the one book he recommends to everyone, no exceptions — and how it quietly shaped Marcus Aurelius and Epictetus.",
+    read: [
+      "Donald Robertson makes a fairly bold claim here: of everything he could recommend, Plato's Apology is the only book he suggests to literally everyone. His reasoning has four parts. It's accessible — a few hours' read, no academic background required, unlike Plato's longer dialogues. It's dramatic — a real courtroom, a man on trial for his life, which pulls you in far more than an abstract treatise would. It plants seeds rather than finishing arguments — it doesn't hand you conclusions so much as questions that keep working on you for years afterward. And it's culturally foundational — you can draw a direct line from this text to how both Marcus Aurelius and Epictetus later thought about death, integrity, and living under pressure.",
+      "The specific passage Robertson keeps returning to is Socrates' attitude toward his own death sentence. His fear, or rather his notable lack of it, doesn't come from certainty about what happens next — he offers two possibilities (an endless dreamless sleep, or some kind of continuation elsewhere) and finds neither one worth dreading. The fear most people carry isn't really about death itself, but about their own beliefs surrounding it — which is close to a direct preview of Epictetus's later line that people are disturbed not by events, but by their opinions about them. Socrates arrived at this after decades of war, plague, and losing friends, which is worth remembering: this wasn't a young man's theory, it was a old man's tested conclusion.",
+    ],
+  },
+  {
     title: "Understanding Core Stoic Principles",
     defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "exercise",
