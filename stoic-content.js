@@ -84,6 +84,12 @@ const MONTHLY = [
 //            entry to hit one. The app shows a "Read" button with an
 //            auto-estimated read time, opens the paragraphs in-app, and
 //            links back to the original resource at the end.
+//   defaultRank — OPTIONAL, 0-3. An editorial starting point for the
+//            "return to this often" star rating, shown until the person
+//            taps a star themselves. The moment they rate a lesson
+//            locally (even setting it back down to 0 stars), their own
+//            rating takes over permanently for that lesson, on that
+//            device — this field never overwrites a personal rating.
 //
 //   One resource can be the source for SEVERAL separate lesson entries
 //   — e.g. a single long video might contain five distinct ideas worth
@@ -99,6 +105,7 @@ const MONTHLY = [
 const LESSONS = [
   {
     title: "Understanding Core Stoic Principles",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "exercise",
     source: "Personal study notes",
     note: "The foundation: the dichotomy of control, the four virtues, and what it actually means to live in agreement with nature.",
@@ -126,6 +133,7 @@ const LESSONS = [
   },
   {
     title: "Meditations",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "Marcus Aurelius, trans. A.S.L. Farquharson (Wikisource)",
     url: "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus",
@@ -133,6 +141,7 @@ const LESSONS = [
   },
   {
     title: "The 5-Step Stoic Routine For Thinking Clearly | Maria Semple",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "The Daily Stoic Podcast",
     url: "https://www.youtube.com/watch?v=c3Sa0BpdHf8",
@@ -140,6 +149,7 @@ const LESSONS = [
   },
   {
     title: "Where To Start With Stoicism (9 Exercises)",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Daily Stoic",
     url: "https://youtu.be/s-obzHUCdmo",
@@ -147,6 +157,7 @@ const LESSONS = [
   },
   {
     title: "What Is Stoicism? A Definition & 9 Stoic Exercises To Get You Started",
+    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "dailystoic.com",
     url: "https://dailystoic.com/what-is-stoicism-a-definition-3-stoic-exercises-to-get-you-started/",
@@ -154,6 +165,7 @@ const LESSONS = [
   },
   {
     title: "12 Stoic Rules for Life",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "dailystoic.com",
     url: "https://dailystoic.com/12-rules-for-life/",
@@ -161,6 +173,7 @@ const LESSONS = [
   },
   {
     title: "Contemptuous Expressions",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Ryan Holiday, on Meditations",
     url: "https://www.youtube.com/watch?v=xMvXKV-ORkY",
@@ -172,6 +185,7 @@ const LESSONS = [
   },
   {
     title: "The Clacking of Tongues",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Ryan Holiday, on Meditations",
     url: "https://www.youtube.com/watch?v=xMvXKV-ORkY",
@@ -183,6 +197,7 @@ const LESSONS = [
   },
   {
     title: "Turning Obstacles Upside Down",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Ryan Holiday, on Meditations",
     url: "https://www.youtube.com/watch?v=xMvXKV-ORkY",
@@ -194,6 +209,7 @@ const LESSONS = [
   },
   {
     title: "The Three Disciplines",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Ryan Holiday, on Meditations",
     url: "https://www.youtube.com/watch?v=xMvXKV-ORkY",
@@ -205,6 +221,7 @@ const LESSONS = [
   },
   {
     title: "Words Become Works",
+    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
     type: "video",
     source: "Ryan Holiday, on Meditations",
     url: "https://www.youtube.com/watch?v=xMvXKV-ORkY",
@@ -216,6 +233,7 @@ const LESSONS = [
   },
   {
     title: "The View From Above",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/the-stoic-view-from-above/",
@@ -227,6 +245,7 @@ const LESSONS = [
   },
   {
     title: "Building a Stoic Morning",
+    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/crafting-the-ultimate-stoic-routine-morning-rituals-1/",
@@ -238,6 +257,7 @@ const LESSONS = [
   },
   {
     title: "Turning Work Into a Stoic Practice",
+    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/creating-the-ultimate-stoic-routine-work-rituals-2/",
@@ -249,6 +269,7 @@ const LESSONS = [
   },
   {
     title: "Socrates' Two-Column Technique",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/why-socrates-two-column-technique-is-still-the-ultimate-self-improvement-tool-ft-donald-robertson/",
@@ -260,6 +281,7 @@ const LESSONS = [
   },
   {
     title: "Marcus Aurelius Was Terrible at Stoicism",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://stoichandbook.buzzsprout.com/1882875/19335609-marcus-aurelius-was-terrible-at-stoicism",
@@ -271,6 +293,7 @@ const LESSONS = [
   },
   {
     title: "The Three Tests for Any Goal",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/how-to-set-goals-that-dont-break-epictetuss-three-tests/",
@@ -282,6 +305,7 @@ const LESSONS = [
   },
   {
     title: "What \"Remove Desire Entirely\" Really Means",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/remove-desire-epictetus/",
@@ -293,6 +317,7 @@ const LESSONS = [
   },
   {
     title: "Preference Without Panic",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/stoic-indifferents-selective-value/",
@@ -304,6 +329,7 @@ const LESSONS = [
   },
   {
     title: "The Practice That Made Me Grateful for My Legs",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
     source: "The Stoic Handbook, Jon Brooks",
     url: "https://www.stoichandbook.co/podcast/the-ancient-stoic-practice-that-made-me-grateful-for-my-legs-and-everything-else-i-take-for-granted/",
