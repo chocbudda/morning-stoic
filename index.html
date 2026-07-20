@@ -22,10 +22,34 @@
 <div id="root"></div>
 <script type="text/babel" data-type="module">
 const { useState, useEffect } = React;
-const { VIRTUES, QUOTES, RULES, MONTHLY, LESSONS } = window.STOIC_CONTENT;
+const { VIRTUES, QUOTES, RULES, MONTHLY, LESSONS, DEFAULT_PHILOSOPHY } = window.STOIC_CONTENT;
 
 
 // ---------- helpers ----------
+const dateLabelFor = (key) =>
+  new Date(key + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+const formatEntry = (key, entry) => {
+  const lines = [dateLabelFor(key)];
+  if (entry.badDay) {
+    lines.push("(bad-day version)");
+    if (entry.gratitude) lines.push(`I get to / I have: ${entry.gratitude}`);
+  } else {
+    if (entry.gratitude) lines.push(`Gratitude: ${entry.gratitude}`);
+    if (entry.virtue) lines.push(`Virtue: ${entry.virtue}${entry.virtueNote ? ` — because ${entry.virtueNote}` : ""}`);
+    if (entry.portToday) lines.push(`Today is a success if: ${entry.portToday}`);
+    if (entry.gain) lines.push(`One gain: ${entry.gain}`);
+  }
+  if (entry.evening) lines.push(`Evening reflection: ${entry.evening}`);
+  return lines.join("\n");
+};
+
+const formatAllEntries = (entries) =>
+  Object.keys(entries)
+    .sort((a, b) => (a < b ? 1 : -1)) // most recent first
+    .map((k) => formatEntry(k, entries[k]))
+    .join("\n\n---\n\n");
+
 const estimateReadMins = (paragraphs) => {
   const words = paragraphs.join(" ").split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 180));
@@ -67,6 +91,7 @@ function StoicMorning() {
   const [loaded, setLoaded] = useState(false);
   const [purpose, setPurpose] = useState("");
   const [enough, setEnough] = useState("");
+  const [philosophy, setPhilosophy] = useState(DEFAULT_PHILOSOPHY);
   const [goals, setGoals] = useState([emptyGoal(), emptyGoal(), emptyGoal()]);
   const [entries, setEntries] = useState({});
 
@@ -82,13 +107,16 @@ function StoicMorning() {
   // ui state
   const [badDay, setBadDay] = useState(false);
   const [portOpen, setPortOpen] = useState(false);
+  const [philosophyOpen, setPhilosophyOpen] = useState(false);
   const [calmOpen, setCalmOpen] = useState(false);
   const [calmView, setCalmView] = useState("protocol"); // protocol | above
   const [premedOpen, setPremedOpen] = useState(false);
   const [premedEvent, setPremedEvent] = useState("");
   const [premedRisks, setPremedRisks] = useState("");
   const [learnOpen, setLearnOpen] = useState(false);
-  const [readIndex, setReadIndex] = useState(null); // index into LESSONS currently being read in-app
+  const [readIndex, setReadIndex] = useState(null);
+  const [journalOpen, setJournalOpen] = useState(false);
+  const [copyState, setCopyState] = useState("idle"); // idle | copied | error // index into LESSONS currently being read in-app
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
 
@@ -100,6 +128,7 @@ function StoicMorning() {
           const s = JSON.parse(raw);
           setPurpose(s.purpose || "");
           setEnough(s.enough || "");
+          setPhilosophy(s.philosophy || DEFAULT_PHILOSOPHY);
           setGoals(
             Array.isArray(s.goals) && s.goals.length === 3
               ? s.goals
@@ -133,6 +162,7 @@ function StoicMorning() {
     const payload = JSON.stringify({
       purpose: next.purpose ?? purpose,
       enough: next.enough ?? enough,
+      philosophy: next.philosophy ?? philosophy,
       goals: next.goals ?? goals,
       entries: next.entries ?? entries,
     });
@@ -179,6 +209,42 @@ function StoicMorning() {
     } catch {
       setSaveState("error");
     }
+  };
+
+  const savePhilosophy = async () => {
+    setSaveState("saving");
+    try {
+      await persist({ philosophy });
+      setPhilosophyOpen(false);
+      setSaveState("idle");
+    } catch {
+      setSaveState("error");
+    }
+  };
+
+  const copyAllEntries = async () => {
+    const text = formatAllEntries(entries);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 2000);
+    } catch {
+      setCopyState("error");
+      setTimeout(() => setCopyState("idle"), 2500);
+    }
+  };
+
+  const downloadAllEntries = () => {
+    const text = formatAllEntries(entries);
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `morning-stoic-entries-${dayKey()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const setGoal = (i, field, v) => {
@@ -387,13 +453,31 @@ function StoicMorning() {
               </div>
 
               <div className="sm-step">
-                <div className="sm-label">2. Write your philosophy + today&rsquo;s virtue</div>
-                <p className="sm-sub">Copy this out, by hand, in your journal:</p>
-                <blockquote style={{ margin: "0 0 10px", padding: "8px 12px", borderLeft: "3px solid #8a7d5a", background: "#F5F1E6", fontStyle: "italic", fontSize: 14 }}>
-                  My daily goal is to bring my actions, desires, and thoughts into harmony with my
-                  philosophy of life. My philosophy of life is virtue = freedom. The four Stoic
-                  virtues are wisdom, courage, justice, and temperance. Virtue is the only good.
-                </blockquote>
+                <div className="sm-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <span>2. Write your philosophy + today&rsquo;s virtue</span>
+                  <button className="sm-link" style={{ padding: 0, fontSize: 12.5 }}
+                    onClick={() => setPhilosophyOpen(!philosophyOpen)}>
+                    {philosophyOpen ? "close" : "edit"}
+                  </button>
+                </div>
+                {philosophyOpen ? (
+                  <div style={{ margin: "6px 0 10px" }}>
+                    <p className="sm-sub">This is your own words — edit it to fit your philosophy of life.</p>
+                    <textarea className="sm-textarea" style={{ minHeight: 96 }} value={philosophy}
+                      onChange={(e) => setPhilosophy(e.target.value)} />
+                    <button className="sm-btn secondary" style={{ marginTop: 8 }} onClick={savePhilosophy}
+                      disabled={saveState === "saving"}>
+                      {saveState === "saving" ? "Saving…" : "Save philosophy"}
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <p className="sm-sub">Copy this out, by hand, in your journal:</p>
+                    <blockquote style={{ margin: "0 0 10px", padding: "8px 12px", borderLeft: "3px solid #8a7d5a", background: "#F5F1E6", fontStyle: "italic", fontSize: 14 }}>
+                      {philosophy}
+                    </blockquote>
+                  </>
+                )}
                 <p className="sm-sub">Then look at your actual day and circle what you&rsquo;ll need most:</p>
                 <div className="sm-virtues" role="group" aria-label="Choose a virtue">
                   {VIRTUES.map((v) => (
@@ -496,6 +580,9 @@ function StoicMorning() {
         </div>
         <div style={{ textAlign: "center" }}>
           <button className="sm-link" onClick={() => setLearnOpen(true)}>I have more time to learn Stoicism</button>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <button className="sm-link" onClick={() => setJournalOpen(true)}>Read my past entries</button>
         </div>
 
         {!loaded && <p className="sm-sub" style={{ textAlign: "center" }}>Loading your practice…</p>}
@@ -628,6 +715,42 @@ function StoicMorning() {
                   <button className="sm-link" onClick={() => { setLearnOpen(false); setReadIndex(null); }}>Close</button>
                 </>
               )}
+            </div>
+          </div>
+        )}
+
+        {journalOpen && (
+          <div className="sm-modal-bg" onClick={() => setJournalOpen(false)}>
+            <div className="sm-modal sm-modal-scroll" onClick={(e) => e.stopPropagation()}>
+              <div className="sm-eyebrow" style={{ color: "#8C3B2E" }}>Your past entries</div>
+              {Object.keys(entries).length === 0 ? (
+                <p className="sm-sub" style={{ marginTop: 0 }}>Nothing saved yet — complete a morning practice first.</p>
+              ) : (
+                <>
+                  <p className="sm-sub" style={{ marginTop: 0 }}>
+                    {Object.keys(entries).length} {Object.keys(entries).length === 1 ? "entry" : "entries"} saved on this device.
+                  </p>
+                  <div className="sm-row" style={{ gap: 8, marginBottom: 14 }}>
+                    <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }} onClick={copyAllEntries}>
+                      {copyState === "copied" ? "Copied ✓" : copyState === "error" ? "Couldn't copy" : "Copy all"}
+                    </button>
+                    <button className="sm-btn secondary" style={{ marginTop: 0, flex: 1 }} onClick={downloadAllEntries}>
+                      Download .txt
+                    </button>
+                  </div>
+                  {Object.keys(entries)
+                    .sort((a, b) => (a < b ? 1 : -1))
+                    .map((key) => (
+                      <div key={key} className="sm-lesson" style={{ cursor: "default" }}>
+                        <div className="sm-lesson-title" style={{ fontSize: 14 }}>{dateLabelFor(key)}</div>
+                        <div className="sm-lesson-note" style={{ whiteSpace: "pre-line", marginTop: 4 }}>
+                          {formatEntry(key, entries[key]).split("\n").slice(1).join("\n") || "—"}
+                        </div>
+                      </div>
+                    ))}
+                </>
+              )}
+              <button className="sm-link" onClick={() => setJournalOpen(false)}>Close</button>
             </div>
           </div>
         )}
