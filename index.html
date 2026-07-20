@@ -94,6 +94,7 @@ function StoicMorning() {
   const [philosophy, setPhilosophy] = useState(DEFAULT_PHILOSOPHY);
   const [goals, setGoals] = useState([emptyGoal(), emptyGoal(), emptyGoal()]);
   const [entries, setEntries] = useState({});
+  const [lessonMeta, setLessonMeta] = useState({}); // { [lessonTitle]: { read: bool, rank: 0-3 } }
 
   // today's inputs
   const [readDone, setReadDone] = useState(false);
@@ -116,6 +117,7 @@ function StoicMorning() {
   const [learnOpen, setLearnOpen] = useState(false);
   const [readIndex, setReadIndex] = useState(null);
   const [journalOpen, setJournalOpen] = useState(false);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [copyState, setCopyState] = useState("idle"); // idle | copied | error // index into LESSONS currently being read in-app
   const [saveState, setSaveState] = useState("idle"); // idle | saving | error
   const [eveningSaved, setEveningSaved] = useState(false);
@@ -135,6 +137,7 @@ function StoicMorning() {
               : [emptyGoal(), emptyGoal(), emptyGoal()]
           );
           setEntries(s.entries || {});
+          setLessonMeta(s.lessonMeta || {});
           const t = (s.entries || {})[dayKey()];
           if (t) {
             setReadDone(!!t.read);
@@ -165,6 +168,7 @@ function StoicMorning() {
       philosophy: next.philosophy ?? philosophy,
       goals: next.goals ?? goals,
       entries: next.entries ?? entries,
+      lessonMeta: next.lessonMeta ?? lessonMeta,
     });
     window.localStorage.setItem(STORE_KEY, payload);
   };
@@ -247,6 +251,21 @@ function StoicMorning() {
     URL.revokeObjectURL(url);
   };
 
+  const toggleLessonRead = (title) => {
+    const current = lessonMeta[title] || { read: false, rank: 0 };
+    const next = { ...lessonMeta, [title]: { ...current, read: !current.read } };
+    setLessonMeta(next);
+    persist({ lessonMeta: next });
+  };
+
+  const setLessonRank = (title, rank) => {
+    const current = lessonMeta[title] || { read: false, rank: 0 };
+    const nextRank = current.rank === rank ? 0 : rank; // tap same star again to clear
+    const next = { ...lessonMeta, [title]: { ...current, rank: nextRank } };
+    setLessonMeta(next);
+    persist({ lessonMeta: next });
+  };
+
   const setGoal = (i, field, v) => {
     const g = goals.map((x, j) => (j === i ? { ...x, [field]: v } : x));
     setGoals(g);
@@ -307,6 +326,14 @@ function StoicMorning() {
         .sm-lesson-title { font-weight: bold; font-size: 15px; }
         .sm-lesson-note { font-size: 13px; color: #6d6558; margin-top: 2px; }
         .sm-lesson-cta { margin-top: 6px; font-size: 12.5px; color: #8C3B2E; font-weight: bold; }
+        .sm-lesson-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #DDD3BC; }
+        .sm-read-toggle { font-family: inherit; font-size: 12px; border: 1px solid #CBBFA4; border-radius: 4px; background: #fff; padding: 3px 8px; cursor: pointer; color: #6d6558; }
+        .sm-read-toggle.on { background: #E9F0E4; border-color: #6F8F5C; color: #4C6B3C; }
+        .sm-stars { display: flex; gap: 2px; margin-left: auto; }
+        .sm-star { font-family: inherit; font-size: 16px; line-height: 1; border: none; background: none; cursor: pointer; color: #CBBFA4; padding: 2px; }
+        .sm-star.on { color: #C99A3E; }
+        .sm-favtoggle { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6d6558; margin-bottom: 10px; cursor: pointer; }
+        .sm-favtoggle input { accent-color: #8C3B2E; }
         .sm-read-back { background: none; border: none; color: #8a7d5a; text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 13px; padding: 0; margin-bottom: 10px; }
         .sm-read-body p { font-size: 15px; line-height: 1.6; margin: 0 0 12px; }
         .sm-read-source { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #DDD3BC; font-size: 13px; }
@@ -656,35 +683,51 @@ function StoicMorning() {
                     The daily practice is deliberately short. When you have more than fifteen minutes,
                     here&rsquo;s where to go deeper — videos, articles, and reads worth the extra time.
                   </p>
+                  {LESSONS.length > 0 && (
+                    <label className="sm-favtoggle">
+                      <input type="checkbox" checked={favoritesOnly} onChange={(e) => setFavoritesOnly(e.target.checked)} />
+                      Show only ones I&rsquo;ve starred
+                    </label>
+                  )}
                   {LESSONS.length === 0 ? (
                     <p className="sm-sub">Nothing added yet.</p>
                   ) : (
-                    LESSONS.map((l, i) =>
-                      l.read && l.read.length > 0 ? (
-                        <a key={i} className="sm-lesson" href="#" onClick={(e) => { e.preventDefault(); setReadIndex(i); }}>
-                          <div className="sm-lesson-top">
-                            <span className="sm-lesson-tag">
-                              {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
-                            </span>
-                            {l.source && <span className="sm-lesson-source">{l.source}</span>}
+                    LESSONS
+                      .filter((l) => !favoritesOnly || (lessonMeta[l.title]?.rank || 0) > 0)
+                      .map((l, i) => {
+                        const meta = lessonMeta[l.title] || { read: false, rank: 0 };
+                        const hasRead = l.read && l.read.length > 0;
+                        return (
+                          <div key={l.title || i} className="sm-lesson" style={{ cursor: "default" }}>
+                            <a href={hasRead ? "#" : l.url} target={hasRead ? undefined : "_blank"} rel="noopener noreferrer"
+                              style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                              onClick={(e) => { if (hasRead) { e.preventDefault(); setReadIndex(LESSONS.indexOf(l)); } }}>
+                              <div className="sm-lesson-top">
+                                <span className="sm-lesson-tag">
+                                  {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
+                                </span>
+                                {l.source && <span className="sm-lesson-source">{l.source}</span>}
+                              </div>
+                              <div className="sm-lesson-title">{l.title}</div>
+                              {l.note && <div className="sm-lesson-note">{l.note}</div>}
+                              {hasRead && <div className="sm-lesson-cta">Read · ~{estimateReadMins(l.read)} min →</div>}
+                            </a>
+                            <div className="sm-lesson-controls">
+                              <button className={"sm-read-toggle" + (meta.read ? " on" : "")}
+                                onClick={() => toggleLessonRead(l.title)}>
+                                {meta.read ? "Read ✓" : "Mark as read"}
+                              </button>
+                              <div className="sm-stars" aria-label="Rate how often you want to return to this">
+                                {[1, 2, 3].map((n) => (
+                                  <button key={n} className={"sm-star" + (meta.rank >= n ? " on" : "")}
+                                    onClick={() => setLessonRank(l.title, n)}
+                                    aria-label={`Set priority ${n}`}>★</button>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                          <div className="sm-lesson-title">{l.title}</div>
-                          {l.note && <div className="sm-lesson-note">{l.note}</div>}
-                          <div className="sm-lesson-cta">Read · ~{estimateReadMins(l.read)} min →</div>
-                        </a>
-                      ) : (
-                        <a key={i} className="sm-lesson" href={l.url} target="_blank" rel="noopener noreferrer">
-                          <div className="sm-lesson-top">
-                            <span className="sm-lesson-tag">
-                              {l.type === "video" ? "🎥 Video" : l.type === "exercise" ? "🧭 Exercise" : "📄 Article"}
-                            </span>
-                            {l.source && <span className="sm-lesson-source">{l.source}</span>}
-                          </div>
-                          <div className="sm-lesson-title">{l.title}</div>
-                          {l.note && <div className="sm-lesson-note">{l.note}</div>}
-                        </a>
-                      )
-                    )
+                        );
+                      })
                   )}
                   <button className="sm-link" onClick={() => setLearnOpen(false)}>Close</button>
                 </>
@@ -704,6 +747,19 @@ function StoicMorning() {
                         __html: para.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
                       }} />
                     ))}
+                  </div>
+                  <div className="sm-lesson-controls" style={{ marginTop: 4 }}>
+                    <button className={"sm-read-toggle" + ((lessonMeta[LESSONS[readIndex].title] || {}).read ? " on" : "")}
+                      onClick={() => toggleLessonRead(LESSONS[readIndex].title)}>
+                      {(lessonMeta[LESSONS[readIndex].title] || {}).read ? "Read ✓" : "Mark as read"}
+                    </button>
+                    <div className="sm-stars" aria-label="Rate how often you want to return to this">
+                      {[1, 2, 3].map((n) => (
+                        <button key={n} className={"sm-star" + ((lessonMeta[LESSONS[readIndex].title] || {}).rank >= n ? " on" : "")}
+                          onClick={() => setLessonRank(LESSONS[readIndex].title, n)}
+                          aria-label={`Set priority ${n}`}>★</button>
+                      ))}
+                    </div>
                   </div>
                   {LESSONS[readIndex].url && (
                     <div className="sm-read-source">
