@@ -12,9 +12,6 @@
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-  // Always fetch the latest content, never a cached copy — the timestamp
-  // makes every page load request a fresh URL. This line never needs to
-  // change; only stoic-content.js itself does.
   document.write('<script src="stoic-content.js?v=' + Date.now() + '"><' + '/script>');
 </script>
 </head>
@@ -265,6 +262,12 @@ function StoicMorning() {
     setLessonMeta(next);
     persist({ lessonMeta: next });
   };
+
+  // A lesson's displayed rank is the person's own local rating if they've
+  // ever touched the stars for it (even clearing to 0), otherwise the
+  // content file's editorial defaultRank.
+  const effectiveRank = (l) =>
+    Object.prototype.hasOwnProperty.call(lessonMeta, l.title) ? lessonMeta[l.title].rank : (l.defaultRank || 0);
 
   const setGoal = (i, field, v) => {
     const g = goals.map((x, j) => (j === i ? { ...x, [field]: v } : x));
@@ -693,9 +696,10 @@ function StoicMorning() {
                     <p className="sm-sub">Nothing added yet.</p>
                   ) : (
                     LESSONS
-                      .filter((l) => !favoritesOnly || (lessonMeta[l.title]?.rank || 0) > 0)
+                      .filter((l) => !favoritesOnly || effectiveRank(l) > 0)
                       .map((l, i) => {
                         const meta = lessonMeta[l.title] || { read: false, rank: 0 };
+                        const rank = effectiveRank(l);
                         const hasRead = l.read && l.read.length > 0;
                         return (
                           <div key={l.title || i} className="sm-lesson" style={{ cursor: "default" }}>
@@ -719,7 +723,7 @@ function StoicMorning() {
                               </button>
                               <div className="sm-stars" aria-label="Rate how often you want to return to this">
                                 {[1, 2, 3].map((n) => (
-                                  <button key={n} className={"sm-star" + (meta.rank >= n ? " on" : "")}
+                                  <button key={n} className={"sm-star" + (rank >= n ? " on" : "")}
                                     onClick={() => setLessonRank(l.title, n)}
                                     aria-label={`Set priority ${n}`}>★</button>
                                 ))}
@@ -755,7 +759,7 @@ function StoicMorning() {
                     </button>
                     <div className="sm-stars" aria-label="Rate how often you want to return to this">
                       {[1, 2, 3].map((n) => (
-                        <button key={n} className={"sm-star" + ((lessonMeta[LESSONS[readIndex].title] || {}).rank >= n ? " on" : "")}
+                        <button key={n} className={"sm-star" + (effectiveRank(LESSONS[readIndex]) >= n ? " on" : "")}
                           onClick={() => setLessonRank(LESSONS[readIndex].title, n)}
                           aria-label={`Set priority ${n}`}>★</button>
                       ))}
