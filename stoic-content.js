@@ -71,7 +71,11 @@ const MONTHLY = [
 // "I have more time to learn Stoicism" — further videos, articles, and
 // exercises for going deeper than the daily practice. Each entry:
 //   title  — display name
-//   type   — 'video' | 'article' | 'exercise'
+//   type   — 'video' | 'article' | 'exercise' | 'primary'. Use 'primary'
+//            for full, free, public-domain primary texts (Meditations,
+//            the Enchiridion, etc.) — these get a distinct "Primary
+//            Source" tag, a stronger border, and are grouped at the top
+//            of the list, ahead of everything else.
 //   source — channel / publication name, shown as a small tag
 //   url    — link to the original resource, opens in a new tab. OPTIONAL
 //            for a self-written lesson with no external source — the
@@ -104,6 +108,46 @@ const MONTHLY = [
 // other file needs to change.
 const LESSONS = [
   {
+    title: "Apology",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    type: "primary",
+    source: "Plato, trans. Benjamin Jowett (MIT Classics Archive)",
+    url: "https://classics.mit.edu/Plato/apology.html",
+    note: "The full primary source, free — Socrates' own defense at his trial. Not Stoic itself, but the root the whole tradition grows from: reasoned conduct held to under real pressure.",
+  },
+  {
+    title: "Meditations",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    type: "primary",
+    source: "Marcus Aurelius, trans. A.S.L. Farquharson (Wikisource)",
+    url: "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus",
+    note: "The full primary source, free — the book this entire routine keeps circling back to. Worth having on hand rather than only reading about.",
+  },
+  {
+    title: "Enchiridion (The Handbook)",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    type: "primary",
+    source: "Epictetus, trans. Thomas W. Higginson (Project Gutenberg)",
+    url: "https://www.gutenberg.org/files/45109/45109-h/45109-h.htm",
+    note: "The full primary source, free — the short, blunt manual behind the dichotomy of control and much of this routine's language.",
+  },
+  {
+    title: "The Discourses of Epictetus",
+    defaultRank: 1, // 0-3, editorial starting point; overridden by any local user rating
+    type: "primary",
+    source: "Epictetus, trans. George Long (Wikisource)",
+    url: "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments",
+    note: "The full primary source, free — the longer lecture transcripts the Enchiridion was condensed from. Denser, but closer to Epictetus actually teaching.",
+  },
+  {
+    title: "Moral Letters to Lucilius",
+    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
+    type: "primary",
+    source: "Seneca, trans. Richard M. Gummere (Wikisource)",
+    url: "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius",
+    note: "The full primary source, free — 124 letters, each short enough to read one at a time, the closest thing Stoicism has to a personal-advice column.",
+  },
+  {
     title: "Understanding Core Stoic Principles",
     defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
     type: "exercise",
@@ -130,14 +174,6 @@ const LESSONS = [
 
       "Closely related is amor fati, the love of fate. It's the practice of not just accepting what happens to you — even adversity — but embracing it. Instead of wishing things were different, a Stoic loves the reality of the situation, treating every obstacle as an opportunity to practice virtue.",
     ],
-  },
-  {
-    title: "Meditations",
-    defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
-    type: "article",
-    source: "Marcus Aurelius, trans. A.S.L. Farquharson (Wikisource)",
-    url: "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus",
-    note: "The full primary source, free — the book this entire routine keeps circling back to. Worth having on hand rather than only reading about.",
   },
   {
     title: "The 5-Step Stoic Routine For Thinking Clearly | Maria Semple",
