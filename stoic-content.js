@@ -78,7 +78,7 @@ const MONTHLY = [
   },
   {
     title: "The necessity audit",
-    body: "\u201CIf you seek tranquility, do less.\u201D List everything on your plate. Mark each necessary or not. Cut accordingly, and decommit from what you never should have committed to.",
+    body: "“If you seek tranquility, do less.” List everything on your plate. Mark each necessary or not. Cut accordingly, and decommit from what you never should have committed to.",
   },
 ];
 
@@ -412,6 +412,20 @@ const LESSONS = [
     read: [
       "This is premeditatio malorum turned toward appreciation instead of preparation. Imagine, briefly and deliberately, losing something ordinary you take for granted — your legs, your freedom, someone you love — and then notice what happens when you realize, a moment later, that you still have it. Gratitude stops being a concept you nod along to and becomes something closer to a felt experience, if only for a few seconds.",
       "Frequency matters here: once a week or once a month is genuinely enough — overdoing it dulls the effect rather than sharpening it. It works best exactly when you're feeling complacent, entitled, or stuck in the \"I'll be happy when...\" trap this whole practice is built to interrupt. A lighter, everyday version: when you're with someone you love, briefly imagine them gone. When you're walking, briefly imagine losing that ability. It sounds bleak written down, but in practice it's one of the more grounding two-second habits available.",
+    ],
+  },
+  {
+    title: "Let the Obstacle Train You",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
+    type: "exercise",
+    source: "The Stoic Handbook, Jon Brooks",
+    url: "https://www.stoichandbook.co/challenge-day-4",
+    note: "Every obstacle is training a specific virtue. Name the one yours is asking you to develop — then make the smallest move forward.",
+    read: [
+      "The impediment to action advances action. What stands in the way becomes the way. This line gets quoted everywhere. Most people miss what it actually means.",
+      "Every obstacle contains information about what to do next. The frustration you feel when something blocks you — that energy has a use, if you redirect it instead of letting it consume you. Every difficulty you're facing is training a specific virtue: patience, courage, humility, restraint.",
+      "Identify one obstacle you're currently facing. Something that's frustrating you, blocking you, or draining your energy. Then sit with two questions: What skill is this obstacle asking me to build? What's the smallest move forward I can make today?",
+      "One paragraph in your head — or on paper if it helps — is enough.",
     ],
   },
   // Add your own entries here, e.g.:
