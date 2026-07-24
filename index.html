@@ -448,6 +448,7 @@ function StoicMorning() {
         .sm-card { background: #FBF8F0; border: 1px solid #DDD3BC; border-radius: 6px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 1px 0 rgba(90,80,60,.08); }
         .sm-quote { font-size: 18px; line-height: 1.5; font-style: italic; }
         .sm-attr { margin-top: 8px; color: #8C3B2E; font-style: normal; font-size: 14px; }
+        .sm-quote-note { font-size: 13px; color: #6B5E4A; margin-top: 10px; padding-top: 10px; border-top: 1px solid #E8E0D0; line-height: 1.55; }
         .sm-rule-n { display: inline-block; border: 1px solid #8C3B2E; color: #8C3B2E; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 13px; margin-right: 10px; }
         .sm-step { border-top: 1px dashed #DDD3BC; padding-top: 14px; margin-top: 14px; }
         .sm-label { font-weight: bold; margin-bottom: 6px; }
@@ -514,6 +515,7 @@ function StoicMorning() {
         <div className="sm-card">
           <div className="sm-quote">&ldquo;{quote.t}&rdquo;</div>
           <div className="sm-attr">— {quote.a}</div>
+          {quote.e && <div className="sm-quote-note">{quote.e}</div>}
         </div>
 
         {/* Rule of the week */}
