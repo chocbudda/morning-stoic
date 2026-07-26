@@ -435,7 +435,7 @@ function StoicMorning() {
       </div>
     );
   };
-  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim() && portToday.trim() && gain.trim();
+  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim();
 
   const dateLabel = today.toLocaleDateString(undefined, {
     weekday: "long",
@@ -721,7 +721,7 @@ function StoicMorning() {
               {!badDay && (
                 <>
                   <div className="sm-step">
-                    <div className="sm-label">4. Name the port</div>
+                    <div className="sm-label">4. Name the port <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
                     <p className="sm-sub">
                       One sentence. &ldquo;If you do not know to which port you are sailing, no wind is
                       favorable.&rdquo; — Seneca
@@ -734,7 +734,7 @@ function StoicMorning() {
                   </div>
 
                   <div className="sm-step">
-                    <div className="sm-label">5. Today&rsquo;s one gain</div>
+                    <div className="sm-label">5. Today&rsquo;s one gain <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
                     <p className="sm-sub">
                       Ignore the goal; focus on the next brush stroke. One small step
                       {activeGoals.length ? " toward one of your goals:" : "."}
