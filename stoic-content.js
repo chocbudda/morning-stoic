@@ -6,7 +6,7 @@
 // edit any of this — just edit this file and re-deploy.
 // ---------------------------------------------------------------
 
-const DEFAULT_PHILOSOPHY = "My daily goal is to bring my actions, desires, and thoughts into harmony with my philosophy of life. My philosophy of life is virtue = freedom. The four Stoic virtues are wisdom, courage, justice, and temperance. Virtue is the only good. Its pursuit is the only guarantee of good cheer, secure joy, and a tranquil mind.";
+const DEFAULT_PHILOSOPHY = "My daily goal is to bring my actions, desires, and thoughts into harmony with my philosophy of life. My philosophy of life is virtue = freedom: the person who wants only what is in their control cannot be enslaved by fortune. The four Stoic virtues are wisdom, courage, justice, and temperance. Virtue is the only good, and its pursuit is the only guarantee of secure joy and a tranquil mind.";
 
 const VIRTUES = [
   { key: "Wisdom", sub: "Perspective. What is in my control, what is not." },
