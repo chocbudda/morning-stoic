@@ -224,6 +224,10 @@ function StoicMorning() {
     }
   };
 
+  const revertPhilosophy = () => {
+    setPhilosophy(DEFAULT_PHILOSOPHY);
+  };
+
   const copyAllEntries = async () => {
     const text = formatAllEntries(entries);
     try {
@@ -660,10 +664,16 @@ function StoicMorning() {
                     <p className="sm-sub">This is your own words — edit it to fit your philosophy of life.</p>
                     <textarea className="sm-textarea" style={{ minHeight: 96 }} value={philosophy}
                       onChange={(e) => setPhilosophy(e.target.value)} />
-                    <button className="sm-btn secondary" style={{ marginTop: 8 }} onClick={savePhilosophy}
-                      disabled={saveState === "saving"}>
-                      {saveState === "saving" ? "Saving…" : "Save philosophy"}
-                    </button>
+                    <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                      <button className="sm-btn secondary" onClick={savePhilosophy}
+                        disabled={saveState === "saving"}>
+                        {saveState === "saving" ? "Saving…" : "Save philosophy"}
+                      </button>
+                      <button className="sm-link" style={{ fontSize: 12.5 }} onClick={revertPhilosophy}
+                        disabled={philosophy === DEFAULT_PHILOSOPHY}>
+                        Revert to default
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <>
