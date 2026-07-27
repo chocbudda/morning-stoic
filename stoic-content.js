@@ -173,6 +173,14 @@ const LESSONS = [
     note: "The full primary source, free — 124 letters, each short enough to read one at a time, the closest thing Stoicism has to a personal-advice column.",
   },
   {
+    title: "The Daily Stoic",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
+    type: "book",
+    source: "Ryan Holiday & Stephen Hanselman (your Google Drive copy)",
+    url: "https://drive.google.com/file/d/1CEPSQKya5DJVK-mKcE4D1rTVgl3qpy69/view?usp=drivesdk",
+    note: "The book behind step 1 of the morning practice — 366 daily meditations drawn from the primary sources above. This is your own Drive copy, also linked from the main screen.",
+  },
+  {
     title: "Plato's Apology: The Only Book Every Human Needs to Read",
     defaultRank: 2, // 0-3, editorial starting point; overridden by any local user rating
     type: "article",
