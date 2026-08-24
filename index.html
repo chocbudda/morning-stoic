@@ -36,6 +36,7 @@ const formatEntry = (key, entry) => {
     if (entry.portToday) lines.push(`Today is a success if: ${entry.portToday}`);
     if (entry.gain) lines.push(`One gain: ${entry.gain}`);
   }
+  if (entry.judyRitual) lines.push(`Judy's Ritual: done`);
   if (entry.evening) lines.push(`Evening reflection: ${entry.evening}`);
   return lines.join("\n");
 };
@@ -89,12 +90,16 @@ function StoicMorning() {
   const [enough, setEnough] = useState("");
   const [philosophy, setPhilosophy] = useState(DEFAULT_PHILOSOPHY);
   const [goals, setGoals] = useState([emptyGoal(), emptyGoal(), emptyGoal()]);
+  const [stressors, setStressors] = useState([]);
+  const [stressorsOpen, setStressorsOpen] = useState(false);
+  const [stressorDraft, setStressorDraft] = useState("");
   const [entries, setEntries] = useState({});
   const [lessonMeta, setLessonMeta] = useState({}); // { [lessonTitle]: { read: bool, rank: 0-3 } }
 
   // today's inputs
   const [readDone, setReadDone] = useState(false);
   const [gratitude, setGratitude] = useState("");
+  const [judyDone, setJudyDone] = useState(false);
   const [virtue, setVirtue] = useState(virtueDefault);
   const [virtueNote, setVirtueNote] = useState("");
   const [portToday, setPortToday] = useState("");
@@ -136,10 +141,12 @@ function StoicMorning() {
           );
           setEntries(s.entries || {});
           setLessonMeta(s.lessonMeta || {});
+          setStressors(Array.isArray(s.stressors) ? s.stressors : []);
           const t = (s.entries || {})[dayKey()];
           if (t) {
             setReadDone(!!t.read);
             setGratitude(t.gratitude || "");
+            setJudyDone(!!t.judyRitual);
             setVirtue(t.virtue || virtueDefault);
             setVirtueNote(t.virtueNote || "");
             setPortToday(t.portToday || "");
@@ -165,6 +172,7 @@ function StoicMorning() {
       enough: next.enough ?? enough,
       philosophy: next.philosophy ?? philosophy,
       goals: next.goals ?? goals,
+      stressors: next.stressors ?? stressors,
       entries: next.entries ?? entries,
       lessonMeta: next.lessonMeta ?? lessonMeta,
     });
@@ -178,8 +186,8 @@ function StoicMorning() {
   const complete = async () => {
     setSaveState("saving");
     const entry = badDay
-      ? { read: true, gratitude, badDay: true, ts: Date.now() }
-      : { read: readDone, gratitude, virtue, virtueNote, portToday, gain, ts: Date.now() };
+      ? { read: true, gratitude, judyRitual: judyDone, badDay: true, ts: Date.now() }
+      : { read: readDone, gratitude, judyRitual: judyDone, virtue, virtueNote, portToday, gain, ts: Date.now() };
     const nextEntries = { ...entries, [tKey]: entry };
     try {
       await persist({ entries: nextEntries });
@@ -392,6 +400,21 @@ function StoicMorning() {
     setGoals(g);
   };
 
+  const addStressor = () => {
+    const text = stressorDraft.trim();
+    if (!text) return;
+    const next = [...stressors, { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, text }];
+    setStressors(next);
+    setStressorDraft("");
+    persist({ stressors: next });
+  };
+
+  const removeStressor = (id) => {
+    const next = stressors.filter((s) => s.id !== id);
+    setStressors(next);
+    persist({ stressors: next });
+  };
+
   const activeGoals = goals.filter((g) => g.text.trim());
 
   const lessonTag = (l) =>
@@ -441,7 +464,7 @@ function StoicMorning() {
       </div>
     );
   };
-  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim();
+  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim() && judyDone;
 
   const dateLabel = today.toLocaleDateString(undefined, {
     weekday: "long",
@@ -617,6 +640,59 @@ function StoicMorning() {
           )}
         </div>
 
+        {/* Ongoing stressors */}
+        <div className="sm-card">
+          <div className="sm-eyebrow" style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>Ongoing stressors</span>
+            <button className="sm-link" style={{ padding: 0 }} onClick={() => setStressorsOpen(!stressorsOpen)}>
+              {stressorsOpen ? "close" : "edit"}
+            </button>
+          </div>
+
+          {!stressorsOpen && (
+            <div>
+              {stressors.length ? (
+                <div>
+                  {stressors.map((s) => (
+                    <span key={s.id} className="sm-goalchip">{s.text}</span>
+                  ))}
+                </div>
+              ) : (
+                <p className="sm-sub" style={{ margin: "4px 0" }}>
+                  Nothing on the list yet. If something from Judy&rsquo;s Ritual keeps coming back,
+                  it&rsquo;s worth adding here.
+                </p>
+              )}
+            </div>
+          )}
+
+          {stressorsOpen && (
+            <div>
+              <p className="sm-sub">
+                Not for daily writing — a short, standing list of things outside your control that
+                keep recurring. Add one if it&rsquo;s still on your mind after today&rsquo;s ritual;
+                remove it once it no longer applies.
+              </p>
+              {stressors.map((s) => (
+                <div className="sm-row" key={s.id} style={{ alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ flex: 1 }}>{s.text}</span>
+                  <button className="sm-link" style={{ padding: 0, fontSize: 12.5 }} onClick={() => removeStressor(s.id)}>
+                    remove
+                  </button>
+                </div>
+              ))}
+              <div className="sm-row" style={{ alignItems: "center", marginTop: stressors.length ? 10 : 0 }}>
+                <input className="sm-input" value={stressorDraft} onChange={(e) => setStressorDraft(e.target.value)}
+                  placeholder="e.g. my knee, the market, his opinion of me"
+                  onKeyDown={(e) => { if (e.key === "Enter") addStressor(); }} />
+                <button className="sm-btn secondary" onClick={addStressor} disabled={!stressorDraft.trim()}>
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Monthly practice */}
         {showMonthly && (
           <div className="sm-card" style={{ borderColor: "#8a7d5a" }}>
@@ -732,10 +808,19 @@ function StoicMorning() {
                 )}
               </div>
 
+              <div className="sm-step">
+                <label className="sm-check">
+                  <input type="checkbox" checked={judyDone} onChange={(e) => setJudyDone(e.target.checked)} />
+                  <span><b>4. Judy&rsquo;s Ritual.</b> On paper, write down what&rsquo;s bothering you. Sort
+                    it: mine to work on, not mine to release. Then screw up the paper and let it go. In
+                    memory of Judy, who did this every day. Nothing here is saved — just the tick.</span>
+                </label>
+              </div>
+
               {!badDay && (
                 <>
                   <div className="sm-step">
-                    <div className="sm-label">4. Name the port <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
+                    <div className="sm-label">5. Name the port <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
                     <p className="sm-sub">
                       One sentence. &ldquo;If you do not know to which port you are sailing, no wind is
                       favorable.&rdquo; — Seneca
@@ -748,7 +833,7 @@ function StoicMorning() {
                   </div>
 
                   <div className="sm-step">
-                    <div className="sm-label">5. Today&rsquo;s one gain <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
+                    <div className="sm-label">6. Today&rsquo;s one gain <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></div>
                     <p className="sm-sub">
                       Ignore the goal; focus on the next brush stroke. One small step
                       {activeGoals.length ? " toward one of your goals:" : "."}
