@@ -447,6 +447,32 @@ const LESSONS = [
       "One paragraph in your head — or on paper if it helps — is enough.",
     ],
   },
+  {
+    title: "Seneca on Anger: A Brief Madness",
+    defaultRank: 3, // 0-3, editorial starting point; overridden by any local user rating
+    type: "article",
+    source: "Seneca, On Anger (Books 1–3) — written for Morning Stoic",
+    url: "https://docs.google.com/document/d/1aoh3ePPyx2KjcMebF3qAQDg7h_7it82KDeLIKD5E6gc/edit?usp=drivesdk",
+    note: "Ten of Seneca's own lines on anger, in three stages: catch it before it starts, cool it once it's here, then extend the same patience to other people.",
+    read: [
+      "Seneca called anger a **brief madness** — and meant it literally. For as long as it lasts, it behaves exactly like insanity: it clouds judgment, overrides reason, and afterward we often can't fully account for what we said or did. He wrote an entire book about it, On Anger, because he considered it the most costly emotion a person can carry.",
+      "His approach unfolds in three stages: catch it before it starts, cool it once it's arrived, and — hardest of all — extend that same patience to other people.",
+      "**Before It Arrives**",
+      "Anger is weakest at its very first spark, and strongest once it has taken hold. Seneca is blunt about the stakes of letting it run: “Anger is a brief madness” (Book 1, Section 1), and “No pestilence has been more costly for the human race” (Book 1, Section 2). His advice: “The best course is to reject straightaway the initial prickings of anger…” (Book 1, Section 8).",
+      "A sharp thought, a tightening jaw, an edge in your voice — these are small and easy to miss, which is exactly why they're the only moment you have real leverage. Wait until it has fully arrived, and you're no longer choosing anything.",
+      "**Try this:** Notice the first physical sign anger gives you — before the words are out — and treat it as a warning, not a feeling to indulge.",
+      "**While It's Burning**",
+      "Once anger has taken hold, Seneca doesn't recommend fighting it head-on. “Anger has this particular evil trait: it is unwilling to be controlled” (Book 1, Section 19). True strength, he says, is “Greatness of spirit… unshaken, solid through and through” (Book 2, Section 20) — and the real remedy is patience: “The greatest cure for anger is delay” (Book 2, Section 29).",
+      "Anger wants to act immediately — that urgency is most of its power. A reply sent, a decision made, a door slammed, all while the “brief madness” is still running. Give it even a few minutes and most of that urgency drains away on its own. This is the same instinct behind Judy's Ritual and the calm protocol's “right-size it” step: put real distance between the spark and your response, and let the response come from you, not from the flare-up.",
+      "**Try this:** Make a personal rule: nothing sent, said, or decided while angry. Wait it out first, even a few minutes.",
+      "**With Other People**",
+      "The harder discipline is what to do with anger at other people. Seneca's answer is oddly generous: stop judging each offense individually, and accept — in advance — that people are flawed, including you. As he puts it, “…you must grant forgiveness to the entire human race” (Book 2, Section 10), because “…none of us is without fault” (Book 2, Section 28).",
+      "“It is the mark of a great spirit to regard wrongs as beneath contempt” (Book 2, Section 32). And rather than getting even: “How much better it is to heal an injury than to avenge it!” (Book 3, Section 27).",
+      "Once you expect imperfection rather than being ambushed by it, most of what used to provoke you starts to look less like an attack and more like what it actually is: someone else's bad day, bad judgment, or bad character meeting yours.",
+      "**Try this:** Next time someone wrongs you, pause and ask: have I ever done something like this myself? Let that temper what happens next.",
+      "None of this asks you to feel nothing — Seneca clearly felt things strongly enough to spend a whole book on the subject. What he's really describing is temperance: the gap between the spark and the act, held open on purpose, so that whatever you do next is chosen rather than triggered.",
+    ],
+  },
   // Add your own entries here, e.g.:
   // {
   //   title: "Example lesson title",
