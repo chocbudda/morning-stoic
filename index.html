@@ -464,7 +464,7 @@ function StoicMorning() {
       </div>
     );
   };
-  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim() && judyDone;
+  const canComplete = badDay ? gratitude.trim() : readDone && gratitude.trim();
 
   const dateLabel = today.toLocaleDateString(undefined, {
     weekday: "long",
@@ -811,7 +811,7 @@ function StoicMorning() {
               <div className="sm-step">
                 <label className="sm-check">
                   <input type="checkbox" checked={judyDone} onChange={(e) => setJudyDone(e.target.checked)} />
-                  <span><b>4. Judy&rsquo;s Ritual.</b> On paper, write down what&rsquo;s bothering you. Sort
+                  <span><b>4. Judy&rsquo;s Ritual</b> <span style={{ opacity: 0.6 }}>(optional).</span> On paper, write down what&rsquo;s bothering you. Sort
                     it: mine to work on, not mine to release. Then screw up the paper and let it go. In
                     memory of Judy, who did this every day. Nothing here is saved — just the tick.</span>
                 </label>
